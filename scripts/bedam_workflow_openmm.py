@@ -90,13 +90,13 @@ class bedam_job_openmm_asyncre(bedam_job_asyncre):
         if lambda1 is not None:
             input += "LAMBDA1 = '%s'\n" % lambda1
         else:
-            input += "LAMBDA1 = '%s'\n" % zerosdefault     
+            input += "LAMBDA1 = '%s'\n" % lambdas     
         
         lambda2 = self.keywords.get('LAMBDA2')
         if lambda2 is not None:
             input += "LAMBDA2 = '%s'\n" % lambda2
         else:
-            input += "LAMBDA2 = '%s'\n" % zerosdefault
+            input += "LAMBDA2 = '%s'\n" % lambdas
 
         alpha = self.keywords.get('ALPHA')
         if alpha is not None:
