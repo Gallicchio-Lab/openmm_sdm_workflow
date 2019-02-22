@@ -5,12 +5,13 @@
 library("UWHAM")
 
 bias.fcn <- function(ebind, lam, lam1, lam2, alpha, u0, w0){
-# This is for the bias quadbias potential
+# This is for the bias ilogistic potential
 # (lambda2-lambda1) ln[1+exp(-alpha (u-u0))]/alpha + lambda2 u + w0
-    ebias1 <- 0
-    if (alpha > 0)
+    ebias1 <- 0*ebind
+    if (alpha > 0) {
         ee <- 1 + exp(-alpha*(ebind-u0))
         ebias1 <- (lam2 - lam1)*log(ee)/alpha
+    }
     ebias1 + lam2*ebind + w0
 }
 
@@ -69,9 +70,6 @@ function (x, w, xaxis, xmin, xmax, ymax, bar = TRUE, add = FALSE,
 
 
 data.t <- read.table("repl.cycle.totE.potE.temp.lambda.ebind.lambda1.lambda2.alpha.u0.w0.dat")
-data.t$e0 <- data.t$V3 - bias.fcn(data.t$V7,data.t$V6,data.t$V8,data.t$V9,data.t$V10,data.t$V11,data.t$V12)
-
-
 
 #quadbias
 #gamma <- c(0.000, 0.033, 0.067, 0.100, 0.100, 0.100, 0.100, 0.100, 0.100, 0.100, 0.100, 0.089, 0.067, 0.044, 0.022, 0.000)
@@ -98,6 +96,13 @@ mtempt <- length(bet)
 mlam <- length(lam)
 m <- mlam*mtempt
 N <- length(data.t$V1)
+
+#extract U0 values as U-bias
+#this is relevant only if the states are at different temperatures
+data.t$e0 <- data.t$V3
+for (i in 1:N) {
+    data.t$e0[i] <- data.t$e0[i] - bias.fcn(data.t$V7[i],data.t$V6[i],data.t$V8[i],data.t$V9[i],data.t$V10[i],data.t$V11[i],data.t$V12[i])
+}
 
 neg.pot <- matrix(0, N,m)
 sid <- 1
