@@ -9,10 +9,9 @@ schrodinger=/home/software/schrodinger/Desmond_Maestro_2013.3
 
 cntltmpl=bedam_workflow_template_openmm.cntl
 rcpt_cntltmpl=workflow_receptor_template.cntl
-numcores=1
-numthreads=1
 
 receptor=1hpx
+ligands="1 2 3"
 agbnpparam=agbnp2.param.agbnp_plugin
 
 
@@ -41,8 +40,10 @@ EOF
 complex_dir=${work_dir}/complexes
 mkdir ${complex_dir}
 
+numcores=`wc ${scripts_dir}/nodefile | awk '{print $1}'`
+numthreads=1
 
-for lig in 3 4 ; do
+for lig in ${ligands} ; do
     
   jobname=${set_basename}-${lig}
   jobdir=${complex_dir}/${jobname}
@@ -70,7 +71,7 @@ done
 
 # #run bedam workflow
 
-for lig in 3 4 ; do
+for lig in ${ligands} ; do
 
     echo "Running bedam workflow for ligand ${lig} ..."
     jobname=${set_basename}-${lig}
@@ -80,9 +81,8 @@ for lig in 3 4 ; do
     cd ..   
 done
 
-<<EOF
-for lig in `seq 1 2` ; do
-# # ##for lig in 23 ; do
+
+for lig in ${ligands} ; do
 
       echo "Running mintherm for ligand ${lig} ..."
       jobname=${set_basename}-${lig}
@@ -91,5 +91,3 @@ for lig in `seq 1 2` ; do
       ./runopenmm ${jobname}_mintherm.py > ${jobname}_mintherm.log
       cd ..   
 done
-EOF
-
