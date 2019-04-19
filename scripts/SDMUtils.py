@@ -16,6 +16,10 @@ class SDMUtils(object):
         self.LinearMethod = 0
         self.QuadraticMethod = 1
         self.ILogisticMethod = 2
+
+        self.NoSoftCoreMethod = 0
+        self.TanhSoftCoreMethod = 1
+        self.RationalSoftCoreMethod = 2
         
     def _setRcptReferenceParticles(self, rcpt_ref_particles):
         if len(rcpt_ref_particles) != 3:
