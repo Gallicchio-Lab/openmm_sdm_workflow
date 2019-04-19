@@ -191,12 +191,18 @@ alpha = @alpha@ / kilocalorie_per_mole
 u0 = @u0@ * kilocalorie_per_mole
 w0coeff = @w0coeff@ * kilocalorie_per_mole
 
+umsc = {soft_core_umax} * kilocalorie_per_mole
+acore = {soft_core_acore}
+
 print("lambda = ", lmbd)
 print("lambda1 = ", lambda1)
 print("lambda2 = ", lambda2)
 print("alpha = ", alpha)
 print("u0 = ", u0)
-print("w0coeff ", w0coeff)
+print("w0coeff = ", w0coeff)
+print("soft core method = ", '{soft_core_method}')
+print("umax = ", umsc)
+print("acore = ", acore)
 
 rcptfile_input  = '{jobname}_rcpt_@nm1@.dms'
 ligfile_input   = '{jobname}_lig_@nm1@.dms'
@@ -204,7 +210,6 @@ rcptfile_output = '{jobname}_rcpt_tmp.dms'
 ligfile_output  = '{jobname}_lig_tmp.dms'
 rcptfile_result = '{jobname}_rcpt_@n@.dms'
 ligfile_result  = '{jobname}_lig_@n@.dms'
-
 
 shutil.copyfile(rcptfile_input, rcptfile_output)
 shutil.copyfile(ligfile_input, ligfile_output)
@@ -225,7 +230,7 @@ r0 = {rest_ligand_cmtol} * angstrom #radius of Vsite sphere
 
 #these can be 'None" if not using orientational restraints
 lig_ref_atoms = {ligand_ref_atoms} # the 3 atoms of the ligand that define the coordinate system of the ligand
-rcpt_ref_atoms = {receptor_ref_atoms} # the 3 atoms of the ligand that define the coordinate system of the receptor
+rcpt_ref_atoms = {receptor_ref_atoms} # the 3 atoms of the receptor that define the coordinate system of the receptor
 angle_center = {angle_center} * degrees
 kfangle = {kfangle} * kilocalorie_per_mole/degrees**2
 angletol = {angletol} * degrees
@@ -288,7 +293,11 @@ integrator.setLambda2(lambda2)
 integrator.setAlpha(alpha*kilojoule_per_mole)
 integrator.setU0(u0/ kilojoule_per_mole)
 integrator.setW0coeff(w0coeff / kilojoule_per_mole)    
-integrator.setRestraintControlParameterName(sdm_utils.getControlParameterName())
+
+soft_core_method = sdm_utils.{soft_core_method}
+integrator.setSoftCoreMethod(soft_core_method)
+integrator.setUmax(umsc / kilojoule_per_mole)
+integrator.setAcore(acore)
 
 simulation = Simulation(testDes.topology, system, integrator,platform, properties)
 simulation.context.setPositions(testDes.positions)
@@ -373,6 +382,22 @@ print("MD time="+str(elapsed.seconds+elapsed.microseconds*1e-6)+"s")
         else:
             implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
         
+
+        #soft core settings
+        soft_core_method = self.keywords.get('SOFT_CORE_METHOD')
+        if soft_core_method is None:
+            soft_core_method = 'NoSoftCoreMethod'
+        soft_core_umax = self.keywords.get('SOFT_CORE_UMAX')
+        if soft_core_umax is None:
+            soft_core_umax = 50.0 #kcal/mol
+        else:
+            soft_core_umax = float(soft_core_umax)
+        soft_core_acore = self.keywords.get('SOFT_CORE_ACORE')
+        if soft_core_acore is None:
+            soft_core_acore = 1.0
+        else:
+            soft_core_acore = float(soft_core_acore)
+
         inputr = input_openmm.format(
             jobname = self.jobname,
             nlig_atoms = n_lig,
@@ -392,6 +417,9 @@ print("MD time="+str(elapsed.seconds+elapsed.microseconds*1e-6)+"s")
             kfdihedral2 = None,
             dihedral2tol = None,
             implicitsolvent = implicitsolvent,
+            soft_core_method = soft_core_method,
+            soft_core_umax = soft_core_umax,
+            soft_core_acore = soft_core_acore,
             nsteps = nsteps,
             nprnt = nprnt,
             ntrj = ntrj
@@ -442,7 +470,7 @@ r0 = {rest_ligand_cmtol} * angstrom #radius of Vsite sphere
 
 #these can be 'None" if not using orientational restraints
 lig_ref_atoms = {ligand_ref_atoms} # the 3 atoms of the ligand that define the coordinate system of the ligand
-rcpt_ref_atoms = {receptor_ref_atoms} # the 3 atoms of the ligand that define the coordinate system of the receptor
+rcpt_ref_atoms = {receptor_ref_atoms} # the 3 atoms of the receptor that define the coordinate system of the receptor
 angle_center = {angle_center} * degrees
 kfangle = {kfangle} * kilocalorie_per_mole/degrees**2
 angletol = {angletol} * degrees
@@ -651,7 +679,9 @@ print("elapsed time="+str(elapsed.seconds+elapsed.microseconds*1e-6)+"s")
         
         con = sqlite.connect(self.recidxfile)
         with con:
-            cur = con.cursor()  
+            cur = con.cursor()
+            cur.execute("DROP TABLE IF EXISTS %s_term" % table_name)
+            cur.execute("DROP TABLE IF EXISTS %s_param" % table_name)
             cur.execute("CREATE TABLE IF NOT EXISTS %s_term (p0 INTEGER PRIMARY KEY, x0 REAL, y0 REAL, z0 REAL, param INTEGER )" % table_name)
             cur.execute("CREATE TABLE IF NOT EXISTS %s_param (id INTEGER PRIMARY KEY, fc REAL, tol REAL)" % table_name)
             cur.execute("INSERT INTO %s_param (fc, tol, id) VALUES (%f, %f, 0)" % (table_name, rest_kf, rest_tol)) 
