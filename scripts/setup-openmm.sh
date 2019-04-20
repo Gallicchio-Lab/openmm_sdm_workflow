@@ -58,8 +58,6 @@ for lig in ${ligands} ; do
 
   cp ${scripts_dir}/runopenmm ${jobdir}/
   cp ${scripts_dir}/nodefile ${jobdir}/
-
-  cp ${scripts_dir}/SDMUtils.py ${jobdir}/
   
 #  cp ${work_dir}/receptor/${receptor}.dms ${jobdir}/${jobname}_rcpt.dms
   cp ${scripts_dir}/${receptor}.maegz ${jobdir}/

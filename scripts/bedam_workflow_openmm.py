@@ -67,7 +67,6 @@ class bedam_job_openmm_asyncre(bedam_job_asyncre):
             ligfile =  self.jobname + '_lig_0' + '.dms'
             if job_transport == 'SSH':
 		extfiles += ",%s,%s" % (rcptfile,ligfile)
-                extfiles += ",%s" % "SDMUtils.py"
             input += "ENGINE_INPUT_EXTFILES = '%s'\n" % extfiles
 
         temperatures = self.keywords.get('TEMPERATURES')
@@ -175,7 +174,6 @@ from sys import stdout
 import os, re,time, shutil, math
 from simtk.openmm.app.desmonddmsfile import *
 from datetime import datetime
-from SDMUtils import *
 from BEDAMplugin import *
 
 print("Started at: " + str(time.asctime()))
@@ -444,7 +442,6 @@ from sys import stdout
 import os, re,time, shutil, math
 from simtk.openmm.app.desmonddmsfile import *
 from datetime import datetime
-from SDMUtils import *
 from BEDAMplugin import *
 
 print("Started at: " + str(time.asctime()))
