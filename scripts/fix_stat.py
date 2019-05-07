@@ -25,5 +25,5 @@ nreplicas = len(cycle)
 status = [{'stateid_current': stateid[k], 'running_status': 'W',
            'cycle_current': cycle[k]} for k in range(nreplicas)]
 
-print(status)
+#print(status)
 pickle.dump(status,sys.stdout)
