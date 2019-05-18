@@ -174,7 +174,7 @@ from sys import stdout
 import os, re,time, shutil, math
 from simtk.openmm.app.desmonddmsfile import *
 from datetime import datetime
-from BEDAMplugin import *
+from SDMplugin import *
 
 print("Started at: " + str(time.asctime()))
 start=datetime.now()
@@ -283,7 +283,7 @@ temperature = @temperature@ * kelvin
 frictionCoeff = 0.5 / picosecond
 MDstepsize = 0.001 * picosecond
 
-integrator = LangevinIntegratorBEDAM(temperature/kelvin, frictionCoeff/(1/picosecond), MDstepsize/ picosecond, lig_atoms)
+integrator = LangevinIntegratorSDM(temperature/kelvin, frictionCoeff/(1/picosecond), MDstepsize/ picosecond, lig_atoms)
 integrator.setBiasMethod(sdm_utils.ILogisticMethod)
 integrator.setLambda(lmbd)
 integrator.setLambda1(lambda1)
@@ -442,7 +442,7 @@ from sys import stdout
 import os, re,time, shutil, math
 from simtk.openmm.app.desmonddmsfile import *
 from datetime import datetime
-from BEDAMplugin import *
+from SDMplugin import *
 
 print("Started at: " + str(time.asctime()))
 start=datetime.now()
@@ -713,7 +713,7 @@ if __name__ == '__main__':
 
     print( "")
     print( "====================================")
-    print( "       BEDAM Job Preparation for OpenMM        ")
+    print( "       SDM Job Preparation for OpenMM        ")
     print( "====================================")
     print( "")
     print( "SCHRODINGER: " + os.environ['SCHRODINGER'])
