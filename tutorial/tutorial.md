@@ -69,7 +69,7 @@ mkdir $HOME/devel
 cd $HOME/devel
 wget https://github.com/pandegroup/openmm/archive/7.3.1.tar.gz
 tar zxvf 7.3.1.tar.gz
-conda install cmake=3.6.3 swig
+conda install cmake=3.6.3 swig numpy
 conda install -c conda-forge doxygen
 mkdir build_openmm
 cd build_openmm
@@ -411,7 +411,7 @@ the pdb file is used to define the topology and any present in the replica direc
 
 ## Appendix
 
-### A. Installation of `msys` <a name="msys"></a>
+### <a name="msys"></a> A. Installation of `msys`
 
 The `msys` package provides the `mae2dms` utility to convert Maestro files into the DMS format.
 
@@ -442,13 +442,13 @@ Consult the installation section of the README file that comes with `msys` if th
 cd $HOME/devel/msys
 export PYTHONPATH=$HOME/devel/msys/external:$PYTHONPATH
 scons -j4
-scons -j4 PYTHONVER=27
+scons -j4 PYTHONVER=27 MSYS_BOOST_PYTHON_SUFFIX=-py
 ```
 
-For this tutorial we assume that `msys` is installed in `$HOME/local`. Change to match your choice.
+For this tutorial we assume that `msys` will be installed in `$HOME/local`. Change to match your choice.
 
 ```
-scons -j4 PYTHONVER=27 install PREFIX=$HOME/local
+scons -j4 PYTHONVER=27 MSYS_BOOST_PYTHON_SUFFIX=-py install PREFIX=$HOME/local
 ```
 
 make sure that `$HOME/local` is in your search paths:
