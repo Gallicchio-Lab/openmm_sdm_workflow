@@ -180,20 +180,19 @@ Create a simulation directory. Here we use `t4l` as an example. Then we create t
 ```
 mkdir $HOME/t4l
 cd $HOME/t4l
-mkdir ligands receptor
 ```
 
-Copy the receptor and ligand structures for the tutorial into the `ligands` and `receptor` folders. We assume that the SDM workflow has been installed under `$HOME/devel/sdm_openmm_sdm_workflow` (see above).
+Copy the receptor and ligand structures for the tutorial into the `ligands` and `receptor` folders. We assume that the SDM workflow has been installed under `$HOME/devel/openmm_sdm_workflow` (see above).
 
 ```
-cp $HOME/devel/sdm_openmm_sdm_workflow/tutorial/receptor/* $HOME/t4l/receptor/
-cp $HOME/devel/sdm_openmm_sdm_workflow/tutorial/ligands/* $HOME/t4l/ligands/
+cp -r $HOME/devel/openmm_sdm_workflow/tutorial/receptor $HOME/t4l/
+cp -r $HOME/devel/openmm_sdm_workflow/tutorial/ligands $HOME/t4l/
 ```
 
 Now copy the scripts and script templates into the tutorial folder:
 
 ```
-cp -r $HOME/devel/sdm_openmm_sdm_workflow/tutorial/scripts .
+cp -r $HOME/devel/openmm_sdm_workflow/tutorial/scripts .
 cd scripts
 ```
 

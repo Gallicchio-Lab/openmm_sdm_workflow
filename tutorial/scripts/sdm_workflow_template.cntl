@@ -8,7 +8,7 @@ TEMPERATURES = <string list of simulation temperatures>
 
 #LAMBDAS  = ' 0.000, 0.057, 0.114, 0.171, 0.229, 0.286, 0.343, 0.400, 0.457, 0.514, 0.571, 0.629, 0.686, 0.743, 0.800, 1.000'
 LAMBDAS  = <string list of alchemical lambda values>
-`
+
 #CYCLE_TIME = 30
 CYCLE_TIME = <period of replica exchanges, in seconds>
 
