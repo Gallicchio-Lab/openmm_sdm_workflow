@@ -68,10 +68,11 @@ These are the steps we used to build OpenMM 7.3.1 on an Ubuntu 16.04 system:
 mkdir $HOME/devel
 cd $HOME/devel
 wget https://github.com/pandegroup/openmm/archive/7.3.1.tar.gz
-tar zxvf openmm-7.3.1.tar.gz
+tar zxvf 7.3.1.tar.gz
 conda install cmake=3.6.3 swig
 conda install -c conda-forge doxygen
 mkdir build_openmm
+cd build_openmm
 ccmake -i ../openmm-7.3.1
 ```
 
@@ -96,6 +97,8 @@ cd $HOME/devel/build_openmm
 make install
 make PythonInstall
 ```
+
+The `sqlitebrowser` application is very useful to inspect DMS files.
 
 ### Desmond
 
