@@ -29,14 +29,15 @@ SDM calculations require several pieces of software:
 
 1. Conda 2
 2. OpenMM 7.2 or later
-3. Desmond file reader for OpenMM
-4. Msys
-5. SDM workflow
-6. SDM OpenMM plugin
-7. AGBNP OpenMM plugin
-8. ASyncRE for OpenMM
-9. UWHAM for R
-10. VMD for visualization 
+3. Desmond DMS file reader for OpenMM
+4. Desmond (for force field parameter assignment)
+5. Msys
+6. SDM workflow
+7. SDM OpenMM plugin
+8. AGBNP OpenMM plugin
+9. ASyncRE for OpenMM
+10. UWHAM for R
+11. VMD for visualization 
 
 We summarize here the steps to install them and configure them. The steps below were tested on a 16.04 Ubuntu system.
 
@@ -95,6 +96,10 @@ make install
 make PythonInstall
 ```
 
+### Desmond
+
+In this tutorial we will use academic Desmond as part of the Schrodinger's environment to assign OPLS2005 force field parameters. Download and install [Maestro/Desmond](https://www.deshawresearch.com/downloads/download_desmond.cgi). If you have it, the commercial version of Maestro/Desmond also works, of course.
+
 ### Msys
 
 `msys` is a software package developed by DE Shaw Research to manipulate molecular structures. We use it to convert Maestro-formatted files to DMS-formatted files. Installation instructions are in [Appendix A](#msys) below. We assume that `msys` is installed in `$HOME/local` and that executables and libraries there are in the shell search paths. See [Appendix A](#msys).
@@ -109,7 +114,7 @@ cd $HOME/devel
 git clone https://github.com/egallicc/openmm_sdm_workflow.git
 ```
 
-For this tutorial we will use the structures stored under `openmm_sdm_workflow/tutorial` and modify the files under `openmm_sdm_workfklow/scripts` to setup the simulations.
+For this tutorial we will use the structures stored under `openmm_sdm_workflow/tutorial` and modify the files under `openmm_sdm_workfklow/tutorial/scripts` to setup the simulations.
 
 ### SDM OpenMM plugin
 
@@ -184,7 +189,7 @@ cp $HOME/devel/sdm_openmm_sdm_workflow/tutorial/ligands/* $HOME/t4l/ligands/
 Now copy the scripts and script templates into the tutorial folder:
 
 ```
-cp -r $HOME/devel/sdm_openmm_sdm_workflow/scripts .
+cp -r $HOME/devel/sdm_openmm_sdm_workflow/tutorial/scripts .
 cd scripts
 ```
 
@@ -206,7 +211,7 @@ Settings:
 
 * `set_basename`: the name of the project. The name of files, simulation directories, etc. will include this name. For this tutorial set it to `t4l`.
 * `work_dir`: the working directory for this project. That is where the `ligands` and `receptor` directories reside. For this tutorial set it to `$HOME/${set_basename}` which will resolve to `$HOME/t4l`
-* `scripts_dir`: where the scripts are stored. The default points to `$HOME/t4l/scripts` which is what we want.
+* `scripts_dir`: where the scripts are stored. The default points to `${work_dir}/scripts` which is what we want.
 * `schrodinger`: your Schrodinger installation directory. For example `/opt/software/schrodinger/Desmond_Maestro_2017.4`
 * `msys_path`: the msys installation directory. If you followed the instructions above it will be `$HOME/local`.
 * `vmd_path`: the vmd installation directory, usually `/usr/local`.
