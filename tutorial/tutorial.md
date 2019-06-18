@@ -65,6 +65,7 @@ We recommend installing OpenMM from [source](https://github.com/pandegroup/openm
 These are the steps we used to build OpenMM 7.3.1 on an Ubuntu 16.04 system:
 
 ```
+mkdir $HOME/devel
 cd $HOME/devel
 wget https://github.com/pandegroup/openmm/archive/7.3.1.tar.gz
 tar zxvf openmm-7.3.1.tar.gz
