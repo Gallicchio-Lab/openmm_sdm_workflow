@@ -152,8 +152,6 @@ class sdm_job_openmm_asyncre(object):
         input += "PRODUCTION_STEPS = '%d'\n" % int(nsteps)
         input += "PRNT_FREQUENCY = '%d'\n" % int(nprnt)
 
-        input += "IMPLICITSOLVENT = 'AGBNP'\n"
-            
         verbose = self.keywords.get('VERBOSE')
         if verbose is not None:
             input += "VERBOSE = '%s'\n" % verbose
@@ -208,12 +206,8 @@ class sdm_job_openmm_asyncre(object):
         ntrj =  int(self.keywords.get('TRJ_FREQUENCY'))
 
         #implicit solvent
-        if self.keywords.get('IMPLICIT_SOLVENT') is None:
-            implicitsolvent = 'AGBNP'
-        else:
-            implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
+        implicit_solvent = self.keywords.get('IMPLICIT_SOLVENT');
         
-
         #soft core settings
         soft_core_method = self.keywords.get('SOFT_CORE_METHOD')
         if soft_core_method is None:
@@ -299,10 +293,7 @@ class sdm_job_openmm_asyncre(object):
         conn.close()
         
         #implicit solvent
-        if self.keywords.get('IMPLICIT_SOLVENT') is None:
-            implicitsolvent = 'AGBNP'
-        else:
-            implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
+        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
 
         #platform etc.
         if self.keywords.get('OPENMM_PLATFORM') is None:
