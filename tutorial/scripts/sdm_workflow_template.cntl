@@ -51,7 +51,7 @@ SOFT_CORE_UMAX = <max binding energy in kcal/mol>
 #SOFT_CORE_ACORE = 0.0625
 SOFT_CORE_ACORE = <exponent of rational soft core potential, dimensionless>
 
-#----end of options----
+#----end of user options, changing the ones below is less common--- 
 
 JOB_TRANSPORT = 'SSH'
 RE_TYPE = 'BEDAMTEMPT'
@@ -67,4 +67,4 @@ REST_LIGAND_CMDIST0 = 0.0
 SOFT_CORE_METHOD = 'RationalSoftCoreMethod'
 
 OPENMM_PLATFORM = 'OpenCL'
-IMPLICIT_SOLVENT = 'AGBNP'
+IMPLICIT_SOLVENT = ''AGBNP''

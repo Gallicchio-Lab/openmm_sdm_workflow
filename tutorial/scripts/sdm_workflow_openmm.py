@@ -206,7 +206,7 @@ class sdm_job_openmm_asyncre(object):
         ntrj =  int(self.keywords.get('TRJ_FREQUENCY'))
 
         #implicit solvent
-        implicit_solvent = self.keywords.get('IMPLICIT_SOLVENT');
+        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT');
         
         #soft core settings
         soft_core_method = self.keywords.get('SOFT_CORE_METHOD')
@@ -294,7 +294,7 @@ class sdm_job_openmm_asyncre(object):
         
         #implicit solvent
         implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
-
+        
         #platform etc.
         if self.keywords.get('OPENMM_PLATFORM') is None:
             platform_name = 'Reference'

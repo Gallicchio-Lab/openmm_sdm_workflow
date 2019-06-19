@@ -20,7 +20,7 @@ testDes = DesmondDMSFile(['{jobname}_lig_0.dms','{jobname}_rcpt_0.dms'])
 #not using a cutoff because AGBNP does not have a smooth switching function
 #stability of binding energy is poor
 #system = testDes.createSystem(nonbondedMethod=CutoffNonPeriodic,nonbondedCutoff=12.0*nanometer, OPLS = True, implicitSolvent= '{implicitsolvent}')
-system = testDes.createSystem(nonbondedMethod=NoCutoff, OPLS = True, implicitSolvent= '{implicitsolvent}')
+system = testDes.createSystem(nonbondedMethod=NoCutoff, OPLS = True, implicitSolvent= {implicitsolvent})
 
 
 natoms_ligand = {nlig_atoms}
