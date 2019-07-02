@@ -4,7 +4,7 @@ import pickle
 import re
 import fileinput
 
-#usage: python fix_stat.py < basename_stat.txt > basename_stat
+#usage: python fix_stat.py < basename_stat.txt > basename.stat
 
 stateid = {}
 cycle = {}
