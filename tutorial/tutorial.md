@@ -320,7 +320,7 @@ Go to the simulation directories of each complex and launch the ASyncRE simulati
 
 ```
 cd $HOME/t4l/complexes/t4l-toluene
-python $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.py
+python $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.cntl
 ```
 
 Each RE simulation is set to run for 8 hours (see `WALL_TIME` above). The amount of samples collected will depend on the number of GPUs utilized. The more samples, the better converged will be the free energy estimate.
