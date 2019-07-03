@@ -33,7 +33,8 @@ for f in out_files:
         pass
 
 if len(cycles) < 3:
-    sys.exit("Nothing to clean")
+    print("Nothing to clean")
+    sys.exit(0)
 
 cycles.sort()
 #leaves the last two cycles alone
