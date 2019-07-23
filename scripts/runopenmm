@@ -1,3 +1,0 @@
-#!/bin/bash
-export LD_LIBRARY_PATH=~/devel/openmm-7.2.2/lib:~/devel/openmm-7.2.2/lib/plugins:$LD_LIBRARY_PATH
-~/miniconda2-centos-devel/bin/python $1

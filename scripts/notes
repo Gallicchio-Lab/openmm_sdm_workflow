@@ -1,5 +1,0 @@
-( for f in `/bin/ls -1 *.maegz` ; do echo ${f%.maegz} ; done ) > ligand_list
-
-( sed 's/<HOST>/amalfi-vpn/g' < nodefile > .tmp ; mv .tmp nodefile ;  python ~/Dropbox/src/AsyncRE/tempt_async_re.py 3rvf-lig-rsvr_asyncre.cntl > LOG 2>&1 & )
-
-rcpt .dms file is best when sorted in PDB order. Save .pdb in Maestro and read it back in.
