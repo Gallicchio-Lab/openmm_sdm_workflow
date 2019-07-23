@@ -1,11 +1,11 @@
 # OpenMM SDM Tutorial
 
-[Introduction](#headers)  
-[Gathering the Software Tools](#emphasis)
-[Setup the Simulations](#setup)
-[Run the ASyncRE simulations](#run)
-[Analysis](#analysis)
-[Appendix](#appendix)
+1. [Introduction](#introduction)  
+2. [Gathering the Software Tools](#gathering-the-software-tools)
+3. [Setup the Simulations](#setup-the-simulations)
+4. [Run the ASyncRE simulations](#run-the-asyncre-simulations)
+5. [Analysis](#analysis)
+6. [Appendix](#appendix)
 
 
 ## Introduction
