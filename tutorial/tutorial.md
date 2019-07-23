@@ -294,7 +294,7 @@ This assumes that on the first machine the OpenCL platform for the GPUs is the f
 locahost,0:0,1,OpenCL,,/tmp
 ```
 
-The `<num GPUs>` setting is for multi-GPU setups that are not currently supported. The only allowed value is 1.
+The `<num GPUs>` setting is for MD threads running on multiple GPUs, that are not currently supported. The only allowed value is 1.
 
 In this tutorial, the RE simulation of each complex employs 16 replicas. ASyncRE assumes that there are more replicas than computing devices. In this case, it is not recommended to use more than 8 GPUs.
 
