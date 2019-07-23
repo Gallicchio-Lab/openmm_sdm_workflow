@@ -1,5 +1,15 @@
 # OpenMM SDM Tutorial
 
+[Introduction](#headers)  
+[Gathering the Software Tools](#emphasis)
+[Setup the Simulations](#setup)
+[Run the ASyncRE simulations](#run)
+[Analysis](#analysis)
+[Appendix](#appendix)
+
+
+## Introduction
+
 This tutorial walks you over the steps to setup and run absolute binding free energy calculations for a series of ligands of a mutant of T4 lysozyme using the Single Decoupling (SDM) OpenMM's plugin.
 
 SDM is based on an alchemical process in which the ligand is progressively transferred from the solution environment to the receptor binding site. SDM employs an implicit description of the solvent (here we use the AGBNP model) which allows it to avoid the intermediate vacuum state necessary for absolute binding free energy calculations with explicit solvation (Double Decoupling). Hence SDM requires only one free energy calculation as opposed to two with Double Decoupling. Hamiltonian Parallel Replica Exchange with OpenMM is used for conformational sampling.
@@ -15,7 +25,7 @@ For a background on the alchemical process and the conformational sampling techn
 * [AGBNP, an analytic implicit solvent model suitable for molecular dynamics simulations and high-resolution modeling](http://www.compmolbiophysbc.org/publications#AGBNP1)
 
 
-## Molecular Systems
+### Molecular Systems
 
 For this tutorial, we will consider the complexes between benzene, toluene, and 3-iodotoluene and the L99A mutant of the T4 lysozyme receptor (PDB id: 4W53). The systems were prepared using the free academic version of [Maestro/Desmond](https://www.deshawresearch.com/downloads/download_desmond.cgi). Toluene, water molecules and other bound ligands were removed from the 4W53 receptor structure. To reduce the size of the system and speed-up the calculations, residues 1 through 71 were removed. The receptor was then processed with Protein Preparation tool in Maestro to add hydrogen atoms and cap the termini. OpenMM prefers protein structures in which atoms belonging to the same residue are listed consecutively. To do so the processed receptor structure was saved in PDB format and read back into Maestro.
 
@@ -314,7 +324,7 @@ cd $HOME/t4l/complexes/t4l-toluene
 ./runopenmm t4l-toluene_mintherm.py
 ```
 
-### Step 7: run the ASyncRE simulations
+## Run the ASyncRE simulations
 
 Go to the simulation directories of each complex and launch the ASyncRE simulations. For example, assuming ASyncRE is installed under `$HOME/devel/async_re-openmm`:
 
@@ -362,7 +372,9 @@ Each replica runs in a separate subdirectory named `r0`, `r1`, etc. Each cycle g
 
 The ASyncRE process can be killed at any time with `^C` and optionally restarted. However, replicas currently running on remote machines are likely to keep running and may have to be killed before ASyncRE can be restarted. To start from scratch (that is from the first cycle) remove the replicas directories by doing `rm -r r? r??`. 
 
-### Step 8: cleanup
+## Analysis
+
+### Cleanup
 
 At any time while the simulations are running, do:
 
@@ -373,7 +385,7 @@ bash ./cleanup.sh
 
 to clean up the replica directories. The script gets deletes the .log and .err files and other unnecessary files, except for the last 3 cycles. The script also concatenates the .out and .dcd files. This reduces drastically the number of files and simplifies the inspection of trajectory files.
 
-### Step 9: free energy analysis
+### Free energy analysis
 
 At any time while the simulations are running, do:
 
@@ -397,7 +409,7 @@ t4l-toluene  DGb = -7.617383 +- 0.2985353 DE = -20.26433 +- 0.2746842  min/max c
 
 The output of the R program is in each complex directory. For toluene, for example, it will be in `$HOME/t4l/complexes/t4l-toluene/uwham_analysis.Rout`. Look for errors in this output file if the free energies are not printed. The program also produces plots of the free energy profiles and of the binding energy distributions. For toluene, for example, the plots will be in `$HOME/t4l/complexes/t4l-toluene/Rplots.pdf`.
 
-### Step 10: visualization
+### Visualization
 
 It is always a good idea to inspect trajectory to see what is going on. After cleanup (see above) the trajectory of a replica can be loaded as follows (for example):
 
