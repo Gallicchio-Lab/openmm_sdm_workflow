@@ -418,7 +418,9 @@ cd $HOME/t4l/complexes/t4l-toluene/r4
 vmd -f t4l-toluene_6.pdb t4l-toluene.dcd
 ```
 
-the pdb file is used to define the topology and any present in the replica directory would do. Once in vmd, delete frame 0 to remove it. 
+the pdb file is used to define the topology. Any pdb file present in the replica directory would do. Once in vmd, delete frame 0 to remove it. 
+
+Note that the alchemical lambda value changes with time. Do not be surprised if the ligand overlaps with the receptor during the alchemical trajectory. It is supposed to do that when lambda is small. The trajectory will hopefully show multiple binding and unbinding events. These are an indication of good convergence.
 
 ## Appendix
 
