@@ -411,7 +411,7 @@ The output of the R program is in each complex directory. For toluene, for examp
 
 ### Visualization
 
-It is always a good idea to inspect trajectory to see what is going on. After cleanup (see above) the trajectory of a replica can be loaded as follows (for example):
+It is always a good idea to inspect MD trajectories to see what is going on. After cleanup (see above) the trajectory of a replica can be loaded as follows (for example):
 
 ```
 cd $HOME/t4l/complexes/t4l-toluene/r4
