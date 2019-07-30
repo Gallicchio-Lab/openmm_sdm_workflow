@@ -10,7 +10,7 @@
 
 ## Introduction
 
-This tutorial walks you over the steps to setup and run absolute binding free energy calculations for a series of ligands of a mutant of T4 lysozyme using the Single Decoupling (SDM) OpenMM's plugin.
+This tutorial walks you over the steps to setup and run alchemical absolute binding free energy calculations for a series of complexes of a mutant of T4 lysozyme using the Single Decoupling (SDM) OpenMM's plugin.
 
 SDM is based on an alchemical process in which the ligand is progressively transferred from the solution environment to the receptor binding site. SDM employs an implicit description of the solvent (here we use the AGBNP model) which allows it to avoid the intermediate vacuum state necessary for absolute binding free energy calculations with explicit solvation (Double Decoupling). Hence SDM requires only one free energy calculation as opposed to two with Double Decoupling. Hamiltonian Parallel Replica Exchange with OpenMM is used for conformational sampling.
 
