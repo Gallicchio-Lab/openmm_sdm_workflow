@@ -383,7 +383,7 @@ cd $HOME/t4l/scripts
 bash ./cleanup.sh
 ```
 
-to clean up the replica directories. The script gets deletes the .log and .err files and other unnecessary files, except for the last 3 cycles. The script also concatenates the .out and .dcd files. This reduces drastically the number of files and simplifies the inspection of trajectory files.
+to clean up the replica directories. The script deletes the .log and .err files and other unnecessary files, except for the last 3 cycles. The script also concatenates the .out and .dcd files. This reduces drastically the number of files and simplifies the inspection of trajectory files.
 
 ### Free energy analysis
 
@@ -405,7 +405,7 @@ free energy analysis for ligand toluene
 t4l-toluene  DGb = -7.617383 +- 0.2985353 DE = -20.26433 +- 0.2746842  min/max cycles: 6 7
 ```
 
-`DGb` is the binding free energy. `DE` is the average binding energy in the coupled ensemble (lambda=1).
+`DGb` is the binding free energ in kcal/mol. `DE` is the average binding energy in the coupled ensemble (lambda=1).
 
 The output of the R program is in each complex directory. For toluene, for example, it will be in `$HOME/t4l/complexes/t4l-toluene/uwham_analysis.Rout`. Look for errors in this output file if the free energies are not printed. The program also produces plots of the free energy profiles and of the binding energy distributions. For toluene, for example, the plots will be in `$HOME/t4l/complexes/t4l-toluene/Rplots.pdf`.
 
