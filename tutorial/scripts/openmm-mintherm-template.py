@@ -115,6 +115,10 @@ testDes.setPositions(positions)
 testDes.setVelocities(velocities)
 testDes.close()
 
+#save a pdb file that can be used as a topology to load .dcd files in vmd
+with open('{jobname}.pdb', 'w') as output:
+  PDBFile.writeFile(simulation.topology, positions, output)
+
 end=datetime.now()
 elapsed=end - start
 print("elapsed time="+str(elapsed.seconds+elapsed.microseconds*1e-6)+"s")
