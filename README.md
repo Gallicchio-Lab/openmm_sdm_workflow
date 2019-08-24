@@ -22,6 +22,20 @@ This software is maintained by the Gallicchio's laboratory at Department of Chem
 
 The workflow is organized in a set of tutorials. Currently, we recommend following the [tutorial with the ssh job transport module](tutorials/ssh_transport/tutorial.md) which applies to a farm of GPUs whether local or distributed on multiple servers. A [tutorial with a faster local job transport](tutorials/local_openmm_transport/) is being finalized.  
 
+## References
+
+For a background on the alchemical process and the conformational sampling techniques used with SDM, consult our publications. Here are some key ones:
+
+* [Binding energy distribution analysis method (BEDAM) for estimation of protein-ligand binding affinities](http://www.compmolbiophysbc.org/publications#bedam_2010)
+* [Analytic Model of the Free Energy of Alchemical Molecular Binding](http://www.compmolbiophysbc.org/publications#analytical_theory_2018)
+* [Perturbation Potentials to Overcome Order/Disorder Transitions in Alchemical Binding Free Energy Calculations](http://www.compmolbiophysbc.org/project-updates/manuscriptonorderdisordertransitionsinalchemicalbindingfreeenergycalculations)
+* [Recent Theoretical and Computational Advances for Modeling Protein-Ligand Binding Affinities](http://www.compmolbiophysbc.org/publications#pubs_advprot_2011)
+* [Theory of binless multi-state free energy estimation with applications to protein-ligand binding](http://www.compmolbiophysbc.org/publications#uwham)
+* [Asynchronous Replica Exchange Software for Grid and Heterogeneous Computing](http://www.compmolbiophysbc.org/publications#asyncre_software_2015)
+* [Efficient Gaussian Density Formulation of Volume and Surface Areas of Macromolecules on Graphical Processing Units](http://www.compmolbiophysbc.org/publications#gaussvol_2017)
+* [AGBNP, an analytic implicit solvent model suitable for molecular dynamics simulations and high-resolution modeling](http://www.compmolbiophysbc.org/publications#AGBNP1)
+
+
 ## Installation
 
 SDM calculations require several pieces of software:
