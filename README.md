@@ -149,7 +149,7 @@ ASyncRE is a package written in python to perform replica exchange simulations i
 ```
 conda install numpy configobj paramiko
 cd $HOME/devel
-git clone https://github.com/baofzhang/async_re-openmm.git
+git clone https://github.com/egallicc/async_re-openmm.git
 cd async_re-openmm
 python setup.py install
 ```
