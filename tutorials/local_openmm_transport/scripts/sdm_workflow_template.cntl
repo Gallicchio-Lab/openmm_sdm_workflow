@@ -16,6 +16,8 @@ CYCLE_TIME = 30
 #WALL_TIME = <duration of each ASyncRE simulation, in minutes>
 WALL_TIME = 480
 
+#CHECKPOINT_TIME = <interval after which a checkpoint is saved in the ligand dms file to restart the simulation at any later point>
+CHECKPOINT_TIME = 120
 
 #
 # number of MD steps and print frequency
@@ -61,7 +63,7 @@ SOFT_CORE_ACORE = 0.0625
 
 #----end of user options, changing the ones below is less common--- 
 
-JOB_TRANSPORT = 'LOCAL_OPENMM'
+JOB_TRANSPORT = 'SSH'
 RE_TYPE = 'BEDAMTEMPT'
 
 TOTAL_CORES = <NUMCORES>
@@ -75,4 +77,4 @@ REST_LIGAND_CMDIST0 = 0.0
 SOFT_CORE_METHOD = 'RationalSoftCoreMethod'
 
 OPENMM_PLATFORM = 'OpenCL'
-IMPLICIT_SOLVENT = ''AGBNP''
+IMPLICIT_SOLVENT = 'AGBNP'
