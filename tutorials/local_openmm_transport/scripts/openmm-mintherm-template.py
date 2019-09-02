@@ -100,6 +100,7 @@ totalSteps = 50000
 loopStep = totalSteps/stepId
 delta_temperature = (final_temperature - initial_temperature)/loopStep
 simulation.reporters.append(StateDataReporter(stdout, stepId, step=True, potentialEnergy = True, temperature=True))
+simulation.reporters.append(PDBReporter("{jobname}.pdb", totalSteps))
 
 #MD with temperature ramp
 for i in range(loopStep):
