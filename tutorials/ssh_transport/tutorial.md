@@ -184,6 +184,7 @@ cd $HOME/t4l/complexes/t4l-toluene
 Go to the simulation directories of each complex and launch the ASyncRE simulations. For example, assuming ASyncRE is installed under `$HOME/devel/async_re-openmm`:
 
 ```
+export LD_LIBRARY_PATH=$HOME/local/openmm-7.3.1/lib:$HOME/local/openmm-7.3.1/lib/plugins:$LD_LIBRARY_PATH
 cd $HOME/t4l/complexes/t4l-toluene
 python $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.cntl
 ```

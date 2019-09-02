@@ -128,6 +128,12 @@ class sdm_job_openmm_asyncre(object):
         cycle_time = self.keywords.get('CYCLE_TIME')
         if cycle_time is not None:
             input += "CYCLE_TIME = %d\n" % int(cycle_time)
+
+        if job_transport == 'LOCAL_OPENMM':
+            checkpoint_time = self.keywords.get('CHECKPOINT_TIME')
+            if checkpoint_time is not None:
+                input += "CHEKPOINT_TIME = %d\n" % int(checkpoint_time)
+
             
         if job_transport == 'SSH' or job_transport == 'LOCAL_OPENMM':
             input += "NODEFILE = 'nodefile'\n"
