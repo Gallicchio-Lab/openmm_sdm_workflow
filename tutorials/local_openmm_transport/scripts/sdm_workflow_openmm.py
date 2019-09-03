@@ -132,7 +132,7 @@ class sdm_job_openmm_asyncre(object):
         if job_transport == 'LOCAL_OPENMM':
             checkpoint_time = self.keywords.get('CHECKPOINT_TIME')
             if checkpoint_time is not None:
-                input += "CHEKPOINT_TIME = %d\n" % int(checkpoint_time)
+                input += "CHECKPOINT_TIME = %d\n" % int(checkpoint_time)
 
             
         if job_transport == 'SSH' or job_transport == 'LOCAL_OPENMM':
