@@ -63,7 +63,7 @@ SOFT_CORE_ACORE = 0.0625
 
 #----end of user options, changing the ones below is less common--- 
 
-JOB_TRANSPORT = 'SSH'
+JOB_TRANSPORT = 'LOCAL_OPENMM'
 RE_TYPE = 'BEDAMTEMPT'
 
 TOTAL_CORES = <NUMCORES>

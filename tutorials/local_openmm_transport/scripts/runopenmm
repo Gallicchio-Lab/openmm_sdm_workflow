@@ -2,4 +2,4 @@
 openmm_dir=/home/software/openmm/openmm-7.3.1
 pythondir=/home/software/openmm/miniconda2-centos
 export LD_LIBRARY_PATH=${openmm_dir}/lib:${openmm_dir}/lib/plugins:$LD_LIBRARY_PATH
-${pythondir}/bin/python $1 $2
+${pythondir}/bin/python "$@"
