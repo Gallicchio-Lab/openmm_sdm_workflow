@@ -69,7 +69,17 @@ function (x, w, xaxis, xmin, xmax, ymax, bar = TRUE, add = FALSE,
 
 
 
-data.t <- read.table("repl.cycle.totE.potE.temp.lambda.ebind.lambda1.lambda2.alpha.u0.w0.dat")
+data.t <- read.table("repl.cycle.potE.temp.lambda.ebind.lambda1.lambda2.alpha.u0.w0.dat")
+
+potEs = data.t$V3
+temps = data.t$V4
+lambdas = data.t$V5
+ebinds = data.t$V6
+lambda1s = data.t$V7
+lambda2s = data.t$V8
+alphas = data.t$V9
+u0s = data.t$V10
+w0s = data.t$V11
 
 #parameters for ilogistic expected
 lam     <-c( %s )
@@ -89,9 +99,9 @@ N <- length(data.t$V1)
 
 #extract U0 values as U-bias
 #this is relevant only if the states are at different temperatures
-data.t$e0 <- data.t$V3
+e0 <- potEs
 for (i in 1:N) {
-    data.t$e0[i] <- data.t$e0[i] - bias.fcn(data.t$V7[i],data.t$V6[i],data.t$V8[i],data.t$V9[i],data.t$V10[i],data.t$V11[i],data.t$V12[i])
+    e0[i] <- e0[i] - bias.fcn(ebinds[i],lambdas[i],lambda1s[i],lambda2s[i],alphas[i],u0s[i],w0s[i])
 }
 
 neg.pot <- matrix(0, N,m)
@@ -99,7 +109,7 @@ sid <- 1
 # note the order of (be,te)
 for (be in 1:mlam) {
      for (te in 1:mtempt) {
-             neg.pot[,sid] <- npot.fcn(e0=data.t$e0,ebind=data.t$V7,bet[te],lam[be],lambda1[be],lambda2[be],alpha[be],u0[be],w0coeff[be])
+             neg.pot[,sid] <- npot.fcn(e0=e0,ebind=ebinds,bet[te],lam[be],lambda1[be],lambda2[be],alpha[be],u0[be],w0coeff[be])
              sid <- sid + 1
     }
 }
@@ -108,8 +118,8 @@ for (be in 1:mlam) {
 
 
 # note levels
-label.tempt <- factor(data.t$V5, levels=tempt, labels=1:mtempt)
-label.lam <- factor(data.t$V6, levels=lam, labels=1:mlam)
+label.tempt <- factor(tempts, levels=tempt, labels=1:mtempt)
+label.lam <- factor(lambdas, levels=lam, labels=1:mlam)
 label.cross <- (as.numeric(label.lam)-1)*mtempt + as.numeric(label.tempt)
 out <- uwham.r(label=label.cross, logQ=neg.pot,ufactormax=1,ufactormin=1)
 ze <- matrix(out$ze, nrow=mtempt, ncol=mlam)
@@ -124,10 +134,11 @@ dgbind <- dgsite + (-ze[,mlam]/bet[]) - (-ze[,1]/bet[])
 ddgbind <- sqrt(ve[,mlam]+ve[,1])/bet
 
 #average energy
-de = mean(data.t$V7[data.t$V6 > 0.99])
-sde <- sd(data.t$V7[data.t$V6 > 0.99])
-dde = sde/sqrt(length(data.t$V7[data.t$V6 > 0.99]))
-ub = de + bet*sde*sde
+usl1 <- ebinds[label.lam == mlam]
+de <- mean(usl1)
+sde <- sd(usl1)
+dde <- sde/sqrt(length(usl1))
+ub <- de + bet*sde*sde
 
 #DGbind as a function of temperature
 dgbind
@@ -142,13 +153,13 @@ plot(lam, -ze[1,]/bet, type="l")
 write(t(dglambda),file="dglambda.dat",ncol=2)
 
 #get plain be histograms
-umin <- min(data.t$V7)
-umax <- max(data.t$V7)
-u <- data.t$V7[label.lam == mlam];
+umin <- min(ebinds)
+umax <- max(ebinds)
+u <- ebinds[label.lam == mlam];
 hs <- hist(u,plot=FALSE);
 pmax = 1.2*max(hs$density)
 for ( i in 1:mlam ){
-    u <- data.t$V7[label.lam == i];
+    u <- ebinds[label.lam == i];
     hs <- hist(u,plot=FALSE);
     if ( i == 1 ) {
         plot(hs$mids,hs$density,type="l",xlim=c(umin,umax),ylim=c(0,pmax));
