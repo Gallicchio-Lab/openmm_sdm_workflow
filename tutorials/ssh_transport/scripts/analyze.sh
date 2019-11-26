@@ -2,7 +2,7 @@
 
 . setup-settings.sh || exit 1
 
-datafilename=repl.cycle.totE.potE.temp.lambda.ebind.lambda1.lambda2.alpha.u0.w0.dat
+datafilename=repl.cycle.potE.temp.lambda.ebind.lambda1.lambda2.alpha.u0.w0.dat
 
 for lig in ${ligands} ; do
 
@@ -24,9 +24,9 @@ for lig in ${ligands} ; do
 	    for f in `/bin/ls -v ${jobname}*.out` ; do
 		while read -r line ; do
 		    words=(${line// / })
-		    #lambda,lambda1,lambda2,alpha,u0,w0,potE,bindE
-		    # 0       1       2       3   4   5  6     7
- 		    echo "${repl} ${n} ${words[4]} ${words[4]} 300.0 ${words[0]} ${words[7]} ${words[1]} ${words[2]} ${words[3]} ${words[4]} ${words[5]} " >> ${datafilename}
+		    #temperature,lambda,lambda1,lambda2,alpha,u0,w0,potE,bindE
+		    #    0          1      2       3      4    5  6   7   8
+ 		    echo "${repl} ${n} ${words[7]} ${words[0]} ${words[1]} ${words[8]} ${words[2]} ${words[3]} ${words[4]} ${words[5]} ${words[6]} " >> ${datafilename}
 		    n=`expr $n + 1 `
 		done < $f
 	    done

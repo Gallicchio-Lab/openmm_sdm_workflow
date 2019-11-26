@@ -149,7 +149,7 @@ for i in range(loops):
     simulation.step(nprnt)
     pot_energy = (integrator.getPotEnergy()*kilojoule_per_mole).value_in_unit(kilocalorie_per_mole)
     bind_energy = (integrator.getBindE()*kilojoule_per_mole).value_in_unit(kilocalorie_per_mole)
-    print("%f %f %f %f %f %f %f %f" % (lmbd, lambda1, lambda2, alpha*kilocalorie_per_mole, u0/kilocalorie_per_mole, w0coeff/kilocalorie_per_mole, pot_energy, bind_energy), file=f )
+    print("%f %f %f %f %f %f %f %f %f" % (temperature/kelvin,lmbd, lambda1, lambda2, alpha*kilocalorie_per_mole, u0/kilocalorie_per_mole, w0coeff/kilocalorie_per_mole, pot_energy, bind_energy), file=f )
     f.flush()
     step += nprnt
 end=datetime.now()

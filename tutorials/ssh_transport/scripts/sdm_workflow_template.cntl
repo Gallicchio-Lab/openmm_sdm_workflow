@@ -1,8 +1,6 @@
 #TEMPERATURE = 300
-TEMPERATURE = <simulation temperature in kelvin>
+TEMPERATURE = <"default" simulation temperature in kelvin>
 
-#multiple temperatures are currently unsupported
-#set it to simulation temperature (see above)
 #TEMPERATURES = '300'
 TEMPERATURES = <string list of simulation temperatures>
 
