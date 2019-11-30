@@ -1,3 +1,6 @@
+#JOB_TRANSPORT = 'SSH'
+JOB_TRANSPORT = <job transport mechanism 'SSH' or 'LOCAL_OPENMM'>
+
 #TEMPERATURES = '300'
 TEMPERATURES = <string list of simulation temperatures>
 
@@ -48,7 +51,6 @@ SOFT_CORE_ACORE = <exponent of rational soft core potential, dimensionless>
 
 #----end of user options, changing the ones below is less common--- 
 
-JOB_TRANSPORT = 'SSH'
 RE_TYPE = 'BEDAMTEMPT'
 
 TOTAL_CORES = <NUMCORES>
