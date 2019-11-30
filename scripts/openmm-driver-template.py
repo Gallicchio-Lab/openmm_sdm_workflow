@@ -13,15 +13,46 @@ from SDMplugin import *
 print("Started at: " + str(time.asctime()))
 start=datetime.now()
 
-shutil.copyfile('{jobname}_rcpt.dms','{jobname}_rcpt_0.dms') 
-shutil.copyfile('{jobname}_lig.dms','{jobname}_lig_0.dms') 
+binding_file = '{jobname}_@n@.out'
+f = open(binding_file, 'w')
 
-testDes = DesmondDMSFile(['{jobname}_lig_0.dms','{jobname}_rcpt_0.dms']) 
+temperature = @temperature@ * kelvin
+lmbd = @lambda@
+lambda1 = @lambda1@
+lambda2 = @lambda2@
+alpha = @alpha@ / kilocalorie_per_mole
+u0 = @u0@ * kilocalorie_per_mole
+w0coeff = @w0coeff@ * kilocalorie_per_mole
+
+umsc = {soft_core_umax} * kilocalorie_per_mole
+acore = {soft_core_acore}
+
+print("temperature = ", temperature)
+print("lambda = ", lmbd)
+print("lambda1 = ", lambda1)
+print("lambda2 = ", lambda2)
+print("alpha = ", alpha)
+print("u0 = ", u0)
+print("w0coeff = ", w0coeff)
+print("soft core method = ", '{soft_core_method}')
+print("umax = ", umsc)
+print("acore = ", acore)
+
+rcptfile_input  = '{jobname}_rcpt_@nm1@.dms'
+ligfile_input   = '{jobname}_lig_@nm1@.dms'
+rcptfile_output = '{jobname}_rcpt_tmp.dms'
+ligfile_output  = '{jobname}_lig_tmp.dms'
+rcptfile_result = '{jobname}_rcpt_@n@.dms'
+ligfile_result  = '{jobname}_lig_@n@.dms'
+
+shutil.copyfile(rcptfile_input, rcptfile_output)
+shutil.copyfile(ligfile_input, ligfile_output)
+
+testDes = DesmondDMSFile([ligfile_output, rcptfile_output]) 
 #not using a cutoff because AGBNP does not have a smooth switching function
 #stability of binding energy is poor
 #system = testDes.createSystem(nonbondedMethod=CutoffNonPeriodic,nonbondedCutoff=12.0*nanometer, OPLS = True, implicitSolvent= '{implicitsolvent}')
-system = testDes.createSystem(nonbondedMethod=NoCutoff, OPLS = True, implicitSolvent= {implicitsolvent})
-
+system = testDes.createSystem(nonbondedMethod=NoCutoff, OPLS = True, implicitSolvent= '{implicitsolvent}')
 
 natoms_ligand = {nlig_atoms}
 lig_atoms = range(natoms_ligand)
@@ -68,57 +99,72 @@ sdm_utils.addRestraintForce(lig_cm_particles = lig_atom_restr,
                             kfdihedral2 = kfdihedral2,
                             dihedral2tol = dihedral2tol)
 
-initial_temperature = 50 * kelvin
-final_temperature = {temperature} * kelvin
-
-temperature = initial_temperature
-frictionCoeff = 0.5 / picosecond
-MDstepsize = 0.001 * picosecond
-    
-integrator = LangevinIntegrator(temperature/kelvin, frictionCoeff/(1/picosecond), MDstepsize/ picosecond)
-
-platform_name = '{platform}'
+platform_name = '@platform@'
 platform = Platform.getPlatformByName(platform_name)
 
 properties = {{}}
 
+if platform_name =='OpenCL':
+    #expected "platformid:deviceid" or empty
+    device = "@pn@"
+    m = re.match("(\d+):(\d+)", device)
+    if m:
+        platformid = m.group(1)
+        deviceid = m.group(2)
+        properties["OpenCLPlatformIndex"] = platformid
+        properties["DeviceIndex"] = deviceid
+        print("Using platform id: %s, device id: %s" % ( platformid ,  deviceid) )
+
+frictionCoeff = 0.5 / picosecond
+MDstepsize = 0.001 * picosecond
+
+integrator = LangevinIntegratorSDM(temperature/kelvin, frictionCoeff/(1/picosecond), MDstepsize/ picosecond, lig_atoms)
+integrator.setBiasMethod(sdm_utils.ILogisticMethod)
+integrator.setLambda(lmbd)
+integrator.setLambda1(lambda1)
+integrator.setLambda2(lambda2)
+integrator.setAlpha(alpha*kilojoule_per_mole)
+integrator.setU0(u0/ kilojoule_per_mole)
+integrator.setW0coeff(w0coeff / kilojoule_per_mole)    
+
+soft_core_method = sdm_utils.{soft_core_method}
+integrator.setSoftCoreMethod(soft_core_method)
+integrator.setUmax(umsc / kilojoule_per_mole)
+integrator.setAcore(acore)
+
 simulation = Simulation(testDes.topology, system, integrator,platform, properties)
-print ("Using platform %s" % simulation.context.getPlatform().getName())
 simulation.context.setPositions(testDes.positions)
 simulation.context.setVelocities(testDes.velocities)
-context=simulation.context
 
-state = simulation.context.getState(getEnergy = True)
-print(state.getPotentialEnergy())
-print("Energy minimizing the system ...")
-simulation.minimizeEnergy()
-state = simulation.context.getState(getEnergy = True)
-print(state.getPotentialEnergy())
+totalSteps = {nsteps}
+nprnt = {nprnt}
+ntrj = {ntrj}
+simulation.reporters.append(StateDataReporter(stdout, nprnt, step=True, temperature=True))
+simulation.reporters.append(DCDReporter("{jobname}_@n@.dcd", ntrj))
+simulation.reporters.append(PDBReporter("{jobname}_@n@.pdb", totalSteps))
 
-stepId = 5000
-totalSteps = 50000
-loopStep = totalSteps/stepId
-delta_temperature = (final_temperature - initial_temperature)/loopStep
-simulation.reporters.append(StateDataReporter(stdout, stepId, step=True, potentialEnergy = True, temperature=True))
-
-#MD with temperature ramp
-for i in range(loopStep):
-    simulation.step(stepId)
-    #prepare system for new temperature
-    temperature = temperature + delta_temperature
-    integrator.setTemperature(temperature)
+loops = totalSteps/nprnt
+start=datetime.now()
+step = 0
+for i in range(loops):
+    simulation.step(nprnt)
+    pot_energy = (integrator.getPotEnergy()*kilojoule_per_mole).value_in_unit(kilocalorie_per_mole)
+    bind_energy = (integrator.getBindE()*kilojoule_per_mole).value_in_unit(kilocalorie_per_mole)
+    print("%f %f %f %f %f %f %f %f %f" % (temperature/kelvin,lmbd, lambda1, lambda2, alpha*kilocalorie_per_mole, u0/kilocalorie_per_mole, w0coeff/kilocalorie_per_mole, pot_energy, bind_energy), file=f )
+    f.flush()
+    step += nprnt
+end=datetime.now()
 
 positions = simulation.context.getState(getPositions=True).getPositions()
 velocities = simulation.context.getState(getVelocities=True).getVelocities()
-print( "Updating positions and velocities")
 testDes.setPositions(positions)
 testDes.setVelocities(velocities)
 testDes.close()
 
-#save a pdb file that can be used as a topology to load .dcd files in vmd
-with open('{jobname}.pdb', 'w') as output:
-  PDBFile.writeFile(simulation.topology, positions, output)
+f.close()
 
-end=datetime.now()
+shutil.copyfile(rcptfile_output, rcptfile_result)
+shutil.copyfile(ligfile_output, ligfile_result)
+
 elapsed=end - start
-print("elapsed time="+str(elapsed.seconds+elapsed.microseconds*1e-6)+"s")
+print("MD time="+str(elapsed.seconds+elapsed.microseconds*1e-6)+"s")

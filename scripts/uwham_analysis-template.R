@@ -90,7 +90,7 @@ u0      <-c( %s )
 w0coeff <-c( %s )
 
 
-tempt <- c( %f )
+tempt <- c( %s )
 bet <- 1.0/(0.001986209*tempt)
 mtempt <- length(bet)
 mlam <- length(lam)

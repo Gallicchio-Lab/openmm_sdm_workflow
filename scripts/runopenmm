@@ -1,5 +1,5 @@
 #!/bin/bash
-openmm_dir=/home/software/openmm/openmm-7.3.1
-pythondir=/home/software/openmm/miniconda2-centos
+openmm_dir=<openmm_dir>
+pythondir=<conda_dir>
 export LD_LIBRARY_PATH=${openmm_dir}/lib:${openmm_dir}/lib/plugins:$LD_LIBRARY_PATH
 ${pythondir}/bin/python "$@"

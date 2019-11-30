@@ -33,8 +33,8 @@ class sdm_job_openmm_asyncre(object):
         if job_transport is None:
             msg = "writeCntlFile: JOB_TRANSPORT is not specified"
             self.exit(msg)
-        if not (job_transport == "SSH"):
-            msg = "writeCntlFile: invalid JOB_TRANSPORT: %s Must be 'SSH'." % job_transport
+        if not (job_transport == "SSH" or job_transport == "LOCAL_OPENMM"):
+            msg = "writeCntlFile: invalid JOB_TRANSPORT: %s Should be SSH or LOCAL_OPENMM." % job_transport
             self.exit(msg)
         input += "JOB_TRANSPORT = '%s'\n" % job_transport
         
@@ -67,8 +67,7 @@ class sdm_job_openmm_asyncre(object):
         if re_type == 'BEDAMTEMPT':
             rcptfile =  self.jobname + '_rcpt_0' + '.dms'
             ligfile =  self.jobname + '_lig_0' + '.dms'
-            if job_transport == 'SSH':
-		extfiles += ",%s,%s" % (rcptfile,ligfile)
+	    extfiles += ",%s,%s" % (rcptfile,ligfile)
             input += "ENGINE_INPUT_EXTFILES = '%s'\n" % extfiles
 
         temperatures = self.keywords.get('TEMPERATURES')
@@ -128,17 +127,13 @@ class sdm_job_openmm_asyncre(object):
         cycle_time = self.keywords.get('CYCLE_TIME')
         if cycle_time is not None:
             input += "CYCLE_TIME = %d\n" % int(cycle_time)
+
+        if job_transport == 'LOCAL_OPENMM':
+            checkpoint_time = self.keywords.get('CHECKPOINT_TIME')
+            if checkpoint_time is not None:
+                input += "CHECKPOINT_TIME = %d\n" % int(checkpoint_time)
             
-        if job_transport == 'SSH':
-            input += "NODEFILE = 'nodefile'\n"
-            total_cores = self.keywords.get('TOTAL_CORES')
-            if total_cores is None:
-                msg = "writeCntlFile: TOTAL_CORES is required"
-                self.exit(msg)
-            input += "TOTAL_CORES = %d\n" % int(total_cores) 
-            subjob_cores = self.keywords.get('SUBJOB_CORES')
-            if subjob_cores is not None:
-                input += "SUBJOB_CORES = %d\n" % int(subjob_cores)
+        input += "NODEFILE = 'nodefile'\n"
 
         subjobs_buffer_size = self.keywords.get('SUBJOBS_BUFFER_SIZE')
         if subjobs_buffer_size is not None:
@@ -147,68 +142,104 @@ class sdm_job_openmm_asyncre(object):
         nsteps = self.keywords.get('PRODUCTION_STEPS')
         nprnt = self.keywords.get('PRNT_FREQUENCY')
         if (not nsteps) or (not nprnt):
-            msg = "writeCntlFile: PRODUCTION_STEPS and PRNT_FREQUENCY are required"
+            msg = "writeCntlFile: PRODUCTION_STEPS PRNT_FREQUENCY are required"
             self.exit(msg)
         input += "PRODUCTION_STEPS = '%d'\n" % int(nsteps)
         input += "PRNT_FREQUENCY = '%d'\n" % int(nprnt)
+        ntrj =  int(self.keywords.get('TRJ_FREQUENCY'))
+        if not ntrj:
+            ntrj = nprnt
+        input += "TRJ_FREQUENCY = '%d'\n" % int(ntrj)
+
+        #implicit solvent
+        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT');        
+        if implicitsolvent is None:
+            msg = "writeCntlFile: Specify implicit solvent to continue"
+            self.exit(msg)
+        input += "IMPLICITSOLVENT = '%s'\n" % str(implicitsolvent)
+
+        #if the job_transport is 'LOCAL_OPENMM', add additional information to the asyncre cntl file
+        if job_transport == 'LOCAL_OPENMM':
+            rcpt_ids = self.getCMRcptAtoms()
+            if len(rcpt_ids) > 0:
+                rcpt_atom_id = ','.join(map(str,rcpt_ids))
+            else:
+                rcpt_atom_id = ""
+            input += "REST_LIGAND_CMREC_ATOMS = %s\n" % rcpt_atom_id
+
+
+            lig_ids = self.getCMLigAtoms()
+            if len(lig_ids) > 0:
+                lig_atom_id = ','.join(map(str,lig_ids))
+            else:
+                lig_atom_id = ""
+            input += "REST_LIGAND_CMLIG_ATOMS = %s\n" % lig_atom_id
+            input += "NATOMS_LIGAND = '%d'\n" % int(self.n_lig)
+            
+            #force constant etc.
+            (kf, tol) = self.getVsiteParams()
+            if kf is not None:
+                input += "CM_KF = %.2f\n" % float(kf)
+            if tol is not None:
+                input += "CM_TOL = %.2f\n" % float(tol)
+
+            #soft core settings
+            (soft_core_method,  soft_core_umax, soft_core_acore) = self.getSoftCoreParams()
+            input += "SOFT_CORE_METHOD = '%s'\n" % str(soft_core_method)
+            input += "UMAX = %.2f\n" % soft_core_umax
+            input += "ACORE = %f\n" % soft_core_acore
+
+            #MD stepsize and relaxation parameters
+            (friction_coeff, stepsize) = self.getMDParams()
+            input += "FRICTION_COEFF = %f\n" % friction_coeff
+            input += "TIME_STEP = %.3f\n" % stepsize
 
         verbose = self.keywords.get('VERBOSE')
         if verbose is not None:
             input += "VERBOSE = '%s'\n" % verbose
-        
+
         cntlfile = "%s_asyncre.cntl" % self.jobname
         f = open(cntlfile, "w")
         f.write(input)
         f.close
 
-#the template driver file for each MD cycle
-    def writeOpenMMDriverFile(self):
-        with open('openmm-driver-template.py', 'r') as f:
-            input_openmm = f.read()
-
-        #figure out number of atoms and indexes of Vsite restrained atoms
+    def getCMRcptAtoms(self):
         rcptfile = self.jobname + '_rcpt' + '.dms'
         conn = sqlite.connect(rcptfile)
-        q = """SELECT id FROM particle"""
-        n_rcpt = 0;
-        for atom_id in conn.execute(q):
-            n_rcpt += 1
         receptor_sql =  self.keywords.get('REST_LIGAND_CMRECSQL')
+        if not receptor_sql:
+            self.exit("REST_LIGAND_CMRECSQL is required")
         q = "SELECT id FROM particle WHERE %s" % receptor_sql
         rcpt_ids = []
+        rcpt_atom_id = ""
         for atom_id in conn.execute(q):
             rcpt_ids.append( int(atom_id[0]) )
-        rcpt_atom_id = str(rcpt_ids)    
         conn.close()
-        
-        
+        return rcpt_ids
+
+    def getCMLigAtoms(self):
         ligfile =  self.jobname + '_lig' + '.dms'
         conn = sqlite.connect(ligfile)
         q = """SELECT id FROM particle"""
-        n_lig = 0;
+        self.n_lig = 0;
         for atom_id in conn.execute(q):
-            n_lig += 1
+            self.n_lig += 1
         ligand_sql =  self.keywords.get('REST_LIGAND_CMLIGSQL')
+        if not ligand_sql:
+            self.exit("REST_LIGAND_CMLIGSQL is required")
         q = "SELECT id FROM particle WHERE %s" % ligand_sql
         lig_ids = []
         for atom_id in conn.execute(q):
             lig_ids.append( int(atom_id[0]) )
-        lig_atom_id = str(lig_ids)
         conn.close()
-        
-        #force constant etc.
+        return lig_ids
+
+    def getVsiteParams(self):
         kf = float(self.keywords.get('REST_LIGAND_CMKF'))
         tol = float(self.keywords.get('REST_LIGAND_CMTOL'))
+        return (kf, tol)
 
-        #number of MD steps etc
-        nsteps = int(self.keywords.get('PRODUCTION_STEPS'))
-        nprnt =  int(self.keywords.get('PRNT_FREQUENCY'))
-        ntrj =  int(self.keywords.get('TRJ_FREQUENCY'))
-
-        #implicit solvent
-        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT');
-        
-        #soft core settings
+    def getSoftCoreParams(self):
         soft_core_method = self.keywords.get('SOFT_CORE_METHOD')
         if soft_core_method is None:
             soft_core_method = 'NoSoftCoreMethod'
@@ -222,10 +253,64 @@ class sdm_job_openmm_asyncre(object):
             soft_core_acore = 1.0
         else:
             soft_core_acore = float(soft_core_acore)
+        return (soft_core_method, soft_core_umax, soft_core_acore)
+
+    def getMDParams(self):
+        friction_coeff = self.keywords.get('FRICTION_COEFF')
+        if friction_coeff is None:
+            friction_coeff = 0.5 #in picosecond
+        else:
+            friction_coeff = float(friction_coeff)
+        stepsize = self.keywords.get('MD_TIME_STEP')
+        if stepsize is None:
+            stepsize = 0.001 #in picosecond
+        else:
+            stepsize = float(stepsize)
+        return (friction_coeff, stepsize)
+    
+#the template driver file for each MD cycle
+    def writeOpenMMDriverFile(self):
+        job_transport = self.keywords.get('JOB_TRANSPORT')
+        if job_transport != 'SSH':
+            return
+
+        with open('openmm-driver-template.py', 'r') as f:
+            input_openmm = f.read()
+
+        #Vsite settings
+        rcpt_ids = self.getCMRcptAtoms()
+        if len(rcpt_ids) > 0:
+            rcpt_atom_id = str(rcpt_ids)
+        else:
+            rcpt_atom_id = ""
+
+        lig_ids = self.getCMLigAtoms()
+        if len(lig_ids) > 0:
+            lig_atom_id = str(lig_ids)
+        else:
+            lig_atom_id = ""
+
+        (kf, tol) = self.getVsiteParams()
+
+        #MD parameters
+        (friction_coeff, stepsize) = self.getMDParams()
+        
+        #steps etc.
+        nsteps = int(self.keywords.get('PRODUCTION_STEPS'))
+        nprnt =  int(self.keywords.get('PRNT_FREQUENCY'))
+        ntrj =  int(self.keywords.get('TRJ_FREQUENCY'))
+
+        #implicit solvent
+        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT');        
+        if implicitsolvent is None:
+            implicitsolvent = None
+        
+        #soft core settings
+        (soft_core_method,  soft_core_umax, soft_core_acore) = self.getSoftCoreParams()
 
         inputr = input_openmm.format(
             jobname = self.jobname,
-            nlig_atoms = n_lig,
+            nlig_atoms = self.n_lig,
             rest_ligand_cmrec = rcpt_atom_id,
             rest_ligand_cmlig = lig_atom_id,
             rest_ligand_cmkf = kf,
@@ -251,46 +336,30 @@ class sdm_job_openmm_asyncre(object):
         )
         
         driverfile = "%s.py" % self.jobname
+        #only write Python driver file if job trasnport is 'SSH'
         f = open(driverfile, "w")
         f.write(inputr)
         f.close()
-
 
 #minimization/thermalization .py driver file
     def writeThermInputFile(self):
         with open('openmm-mintherm-template.py', 'r') as f:
             mintherm_openmm = f.read()
 
-        temperature = self.keywords.get('TEMPERATURE')
+        temperature = self.keywords.get('TEMPERATURES').split(",")[0]
 
-        #figure out number of atoms and indexes of Vsite restrained atoms
-        rcptfile = self.jobname + '_rcpt' + '.dms'
-        conn = sqlite.connect(rcptfile)
-        q = """SELECT id FROM particle"""
-        n_rcpt = 0;
-        for atom_id in conn.execute(q):
-            n_rcpt += 1
-        receptor_sql =  self.keywords.get('REST_LIGAND_CMRECSQL')
-        q = "SELECT id FROM particle WHERE %s" % receptor_sql
-        rcpt_ids = []
-        for atom_id in conn.execute(q):
-            rcpt_ids.append( int(atom_id[0]) )
-        rcpt_atom_id = str(rcpt_ids)    
-        conn.close()
-                
-        ligfile =  self.jobname + '_lig' + '.dms'
-        conn = sqlite.connect(ligfile)
-        q = """SELECT id FROM particle"""
-        n_lig = 0;
-        for atom_id in conn.execute(q):
-            n_lig += 1
-        ligand_sql =  self.keywords.get('REST_LIGAND_CMLIGSQL')
-        q = "SELECT id FROM particle WHERE %s" % ligand_sql
-        lig_ids = []
-        for atom_id in conn.execute(q):
-            lig_ids.append( int(atom_id[0]) )
-        lig_atom_id = str(lig_ids)
-        conn.close()
+        #Vsite settings
+        rcpt_ids = self.getCMRcptAtoms()
+        if len(rcpt_ids) > 0:
+            rcpt_atom_id = str(rcpt_ids)
+        else:
+            rcpt_atom_id = ""
+        lig_ids = self.getCMLigAtoms()
+        if len(lig_ids) > 0:
+            lig_atom_id = str(lig_ids)
+        else:
+            lig_atom_id = ""
+        (kf, tol) = self.getVsiteParams()
         
         #implicit solvent
         implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
@@ -301,16 +370,12 @@ class sdm_job_openmm_asyncre(object):
         else:
             platform_name = self.keywords.get('OPENMM_PLATFORM')
 
-        #force constant etc.
-        kf = float(self.keywords.get('REST_LIGAND_CMKF'))
-        tol = float(self.keywords.get('REST_LIGAND_CMTOL'))
-            
         inputr = mintherm_openmm.format(
             jobname = self.jobname,
             temperature = temperature,
             implicitsolvent = implicitsolvent,
             platform = platform_name,
-            nlig_atoms = n_lig,
+            nlig_atoms = self.n_lig,
             rest_ligand_cmrec = rcpt_atom_id,
             rest_ligand_cmlig = lig_atom_id,
             rest_ligand_cmkf = kf,
@@ -341,16 +406,15 @@ class sdm_job_openmm_asyncre(object):
             cur = con.cursor()
             cur.execute("DROP TABLE IF EXISTS global_cell")
 
-#minimization/thermalization .py driver file
+
     def writeUWHAMFile(self):
         with open('uwham_analysis-template.R', 'r') as f:
             input_uwham = f.read()
 
-        temperature = self.keywords.get('TEMPERATURE')
-        if temperature is None:
-            msg = "writeUWAHMFile: 'TEMPERATURE' is required."
+        temperatures = self.keywords.get('TEMPERATURES')
+        if temperatures is None:
+            msg = "writeUWAHMFile: 'TEMPERATURES' is required."
             self.exit(msg)
-        temperature = float(temperature)
         
         lambdas = self.keywords.get('LAMBDAS')
         if lambdas is None:
@@ -396,7 +460,7 @@ class sdm_job_openmm_asyncre(object):
             alpha,
             u0,
             w0coeff,
-            temperature,
+            temperatures,
             vsiterad
         )
             
@@ -404,7 +468,6 @@ class sdm_job_openmm_asyncre(object):
         f = open(uwham_file, "w")
         f.write(inputr)
         f.close()
-        
             
 ##################### MAIN CODE ##########################
 if __name__ == '__main__':

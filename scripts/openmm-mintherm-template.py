@@ -100,7 +100,6 @@ totalSteps = 50000
 loopStep = totalSteps/stepId
 delta_temperature = (final_temperature - initial_temperature)/loopStep
 simulation.reporters.append(StateDataReporter(stdout, stepId, step=True, potentialEnergy = True, temperature=True))
-simulation.reporters.append(PDBReporter("{jobname}.pdb", totalSteps))
 
 #MD with temperature ramp
 for i in range(loopStep):
@@ -115,6 +114,10 @@ print( "Updating positions and velocities")
 testDes.setPositions(positions)
 testDes.setVelocities(velocities)
 testDes.close()
+
+#save a pdb file that can be used as a topology to load .dcd files in vmd
+with open('{jobname}.pdb', 'w') as output:
+  PDBFile.writeFile(simulation.topology, positions, output)
 
 end=datetime.now()
 elapsed=end - start

@@ -108,8 +108,7 @@ WALL_TIME = 480
 
 Settings:
 
-* `TEMPERATURE`: the simulation temperature in kelvin. Set it to `300`.
-* `TEMPERATURES`: list of replica exchange temperatures. Multi-dimensional replica exchange in temperature and alchemical space is currently not supported. Set this to the single temperature `300`
+* `TEMPERATURES`: list of replica exchange temperatures. Set this to the single temperature `300`
 * `LAMBDAS`: list of alchemical lambda values in comma-separated string. Set it to `' 0.000, 0.057, 0.114, 0.171, 0.229, 0.286, 0.343, 0.400, 0.457, 0.514, 0.571, 0.629, 0.686, 0.743, 0.800, 1.000'`
 * `CYCLE_TIME`: period of RE exchanges in seconds. Set it to `30`.
 * `WALL_TIME`: wall-clock duration of the RE simulation for each complex in minutes. Set it to `480`.
@@ -186,7 +185,7 @@ Go to the simulation directories of each complex and launch the ASyncRE simulati
 ```
 export LD_LIBRARY_PATH=$HOME/local/openmm-7.3.1/lib:$HOME/local/openmm-7.3.1/lib/plugins:$LD_LIBRARY_PATH
 cd $HOME/t4l/complexes/t4l-toluene
-python $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.cntl
+./runopenmm $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.cntl
 ```
 
 Each RE simulation is set to run for 8 hours (see `WALL_TIME` above). The amount of samples collected will depend on the number of GPUs utilized. The more samples, the better converged will be the free energy estimate.

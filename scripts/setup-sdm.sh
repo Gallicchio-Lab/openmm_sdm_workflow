@@ -71,9 +71,6 @@ for lig in ${ligands} ; do
   $SCHRODINGER/run add_agbnp2.py ${jobname}_lig.dms || exit 1
 done
 
-numcores=`wc ${scripts_dir}/nodefile | awk '{print $1}'` || exit 1
-numthreads=1
-
 #runs workflow on each complex to set up openmm asyncre and openmm calculations
 for lig in ${ligands} ; do
     
@@ -83,17 +80,14 @@ for lig in ${ligands} ; do
     cd ${jobdir} || exit 1
     
     echo "Writing workflow control file ..."
-    sed "s/<NUMCORES>/${numcores}/;s/<NUM_THREADS>/${numthreads}/;s/<JOBNAME>/${jobname}/" < ${scripts_dir}/${cntltmpl} > ${jobdir}/${jobname}.cntl || exit 1
+    sed "s/<JOBNAME>/${jobname}/" < ${scripts_dir}/${cntltmpl} > ${jobdir}/${jobname}.cntl || exit 1
 
-    #do not need to copy openmm-driver-template
     cp ${scripts_dir}/openmm-driver-template.py ${scripts_dir}/openmm-mintherm-template.py ${scripts_dir}/uwham_analysis-template.R ${jobdir}/ || exit 1
-    #cp ${scripts_dir}/openmm-mintherm-template.py ${scripts_dir}/uwham_analysis-template.R ${jobdir}/ || exit 1
     
     echo "Running workflow ..."
     python ${scripts_dir}/sdm_workflow_openmm.py ${jobname}.cntl || exit 1
     
 done
-
 
 #minimization and thermalization of each complex
 for lig in ${ligands} ; do

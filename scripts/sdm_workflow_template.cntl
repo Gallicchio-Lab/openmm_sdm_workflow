@@ -1,6 +1,3 @@
-#TEMPERATURE = 300
-TEMPERATURE = <"default" simulation temperature in kelvin>
-
 #TEMPERATURES = '300'
 TEMPERATURES = <string list of simulation temperatures>
 
@@ -65,4 +62,4 @@ REST_LIGAND_CMDIST0 = 0.0
 SOFT_CORE_METHOD = 'RationalSoftCoreMethod'
 
 OPENMM_PLATFORM = 'OpenCL'
-IMPLICIT_SOLVENT = ''AGBNP''
+IMPLICIT_SOLVENT = 'AGBNP'
