@@ -1,4 +1,4 @@
-# OpenMM SDM Tutorial (ssh transport version)
+# OpenMM SDM Tutorial for a set of T4 Lysozyme complexes
 
 1. [Introduction](#introduction)  
 2. [Gathering the Software Tools](#gathering-the-software-tools)
@@ -57,7 +57,7 @@ cp -r $HOME/devel/openmm_sdm_workflow/tutorials/ssh_transport/ligands $HOME/t4l/
 Now copy the scripts and script templates into the tutorial folder:
 
 ```
-cp -r $HOME/devel/openmm_sdm_workflow/tutorials/ssh_transport/scripts .
+cp -r $HOME/devel/openmm_sdm_workflow/scripts .
 cd scripts
 ```
 
@@ -108,6 +108,7 @@ WALL_TIME = 480
 
 Settings:
 
+* `JOB_TRANSPORT`: job transport mechanism. Set it to `SSH`. See below for the 'LOCAL_OPENMM' transport.
 * `TEMPERATURES`: list of replica exchange temperatures. Set this to the single temperature `300`
 * `LAMBDAS`: list of alchemical lambda values in comma-separated string. Set it to `' 0.000, 0.057, 0.114, 0.171, 0.229, 0.286, 0.343, 0.400, 0.457, 0.514, 0.571, 0.629, 0.686, 0.743, 0.800, 1.000'`
 * `CYCLE_TIME`: period of RE exchanges in seconds. Set it to `30`.
@@ -129,8 +130,10 @@ Edit the `runopenmm` launch script to reflect your environment. For example, if 
 
 ```
 #!/bin/bash
-export LD_LIBRARY_PATH=$HOME/local/openmm-7.3.1/lib:$HOME/local/openmm-7.3.1/lib/plugins:$LD_LIBRARY_PATH
-$HOME/miniconda2/bin/python $1
+openmm_dir=$HOME/local/openmm-7.3.1
+pythondir=$HOME/miniconda2
+export LD_LIBRARY_PATH=${openmm_dir}/lib:${openmm_dir}/lib/plugins:$LD_LIBRARY_PATH
+${pythondir}/bin/python "$@"
 ```
 
 Technically, the `runopenmm` launch script should reflect the OpenMM installation environment on the GPU compute machines (see below). In this tutorial we assume that the local machine and the remote compute machines (which could include the local machine) execute OpenMM in the same way.
@@ -183,7 +186,6 @@ cd $HOME/t4l/complexes/t4l-toluene
 Go to the simulation directories of each complex and launch the ASyncRE simulations. For example, assuming ASyncRE is installed under `$HOME/devel/async_re-openmm`:
 
 ```
-export LD_LIBRARY_PATH=$HOME/local/openmm-7.3.1/lib:$HOME/local/openmm-7.3.1/lib/plugins:$LD_LIBRARY_PATH
 cd $HOME/t4l/complexes/t4l-toluene
 ./runopenmm $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.cntl
 ```
@@ -227,18 +229,46 @@ Each replica runs in a separate subdirectory named `r0`, `r1`, etc. Each cycle g
 
 The ASyncRE process can be killed at any time with `^C` and optionally restarted. However, replicas currently running on remote machines are likely to keep running and may have to be killed before ASyncRE can be restarted. To start from scratch (that is from the first cycle) remove the replicas directories by doing `rm -r r? r??`. 
 
+## LOCAL_OPENMM Job Transport Mechanism
+
+ASyncRE supports two mechanisms to run replicas on GPU devices. The first is the file-based SSH job transport mechanism that is suitable for a farm of GPU computing servers accessible through ssh. The `LOCAL_OPENMM` transport is more suitable for a set of local GPUs residing on the machine running the ASyncRE manager. In this case, the LOCAL_OPENMM transport yields faster job turn-around and more frequent replica exchanges. 
+
+To run this tutorial examples with the LOCAL_OPENMM transport:
+
+1. In the `sdm_workflow_template.cntl` file set:
+
+* `JOB_TRANSPORT` to `LOCAL_OPENMM` 
+* `PRODUCTION_STEPS` to `1000`.
+* `PRNT_FREQUENCY` to `5000`.
+* `TRJ_FREQUENCY` to `5000`.
+
+to perform (asynchronous) exchanges every `1000` steps and record data every `5000` steps. 
+
+2. Set the `nodefile` to point to a set of GPUs on the local machine. For example:
+
+```
+locahost,0:0,1,OpenCL,,/tmp
+locahost,0:1,1,OpenCL,,/tmp
+locahost,0:2,1,OpenCL,,/tmp
+locahost,0:3,1,OpenCL,,/tmp
+```
+
+for a compute server with 4 GPUs when the OpenCL platform is the first platform (0).
+
+The 'LOCAL_OPENMM' transport mechanism stores data in compacted form as it goes and does not require the cleanup step before analysis (see below).
+
 ## Analysis
 
 ### Cleanup
 
-At any time while the simulations are running, do:
+If running with the `SSH` job transport mechanism, at any time while the simulations are running, do:
 
 ```
 cd $HOME/t4l/scripts
 bash ./cleanup.sh
 ```
 
-to clean up the replica directories. The script deletes the .log and .err files and other unnecessary files, except for the last 3 cycles. The script also concatenates the .out and .dcd files. This reduces drastically the number of files and simplifies the inspection of trajectory files.
+to clean up the replica directories. The script deletes the .log and .err files and other unnecessary files, except for the last 3 cycles. The script also concatenates the .out and .dcd files. This reduces drastically the number of files and simplifies the inspection of trajectory files. This step is not necessary when using the `LOCAL_OPENMM` job transport.
 
 ### Free energy analysis
 

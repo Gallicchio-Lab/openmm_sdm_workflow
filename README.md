@@ -18,9 +18,9 @@ This software is released under the LGPL license.
 
 This software is maintained by the Gallicchio's laboratory at Department of Chemistry of Brooklyn College of CUNY ([compmolbiophysbc.org](http://compmolbiophysbc.org)). Development and maintenance of this software is supported in part from a grant from the National Science Foundation ([CAREER 1750511](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1750511&HistoricalAwards=false)).
 
-## Tutorials
+## Documentation and Tutorials
 
-The workflow is organized in a set of tutorials. Currently, we recommend following the [tutorial with the ssh job transport module](tutorials/ssh_transport/tutorial.md) which applies to a farm of GPUs whether local or distributed on multiple servers. A [tutorial with a faster local job transport](tutorials/local_openmm_transport/) is being finalized.  
+The documentation is organized in a set of tutorials. Currently, follow the [T4 Lysozyme tutorial](tutorials/t4l/tutorial.md) which prepares SDM calculations for farm of GPUs whether local or distributed on multiple servers. More tutorials are being finalized.  
 
 ## References
 
