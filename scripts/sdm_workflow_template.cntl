@@ -13,6 +13,9 @@ CYCLE_TIME = <period of replica exchanges, in seconds>
 #WALL_TIME = 480
 WALL_TIME = <duration of each ASyncRE simulation, in minutes>
 
+#CHECKPOINT_TIME = 300
+CHECKPOINT_TIME = <period for saving checkpoints, in seconds>
+
 #
 # number of MD steps and print frequency
 #
@@ -53,8 +56,6 @@ SOFT_CORE_ACORE = <exponent of rational soft core potential, dimensionless>
 
 RE_TYPE = 'BEDAMTEMPT'
 
-TOTAL_CORES = <NUMCORES>
-SUBJOB_CORES = <NUM_THREADS>
 VERBOSE = "no"
 SUBJOBS_BUFFER_SIZE = 0.2
 
