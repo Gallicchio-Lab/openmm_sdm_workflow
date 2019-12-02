@@ -1,5 +1,7 @@
 # OpenMM SDM workflow
 
+VERSION 0.2.0
+
 A workflow to setup Single Decoupling alchemical binding free energy calculations with OpenMM.
 
 ## Contributors
