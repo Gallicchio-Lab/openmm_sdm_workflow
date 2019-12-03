@@ -118,7 +118,7 @@ for (be in 1:mlam) {
 
 
 # note levels
-label.tempt <- factor(tempts, levels=tempt, labels=1:mtempt)
+label.tempt <- factor(temps, levels=tempt, labels=1:mtempt)
 label.lam <- factor(lambdas, levels=lam, labels=1:mlam)
 label.cross <- (as.numeric(label.lam)-1)*mtempt + as.numeric(label.tempt)
 out <- uwham.r(label=label.cross, logQ=neg.pot,ufactormax=1,ufactormin=1)
