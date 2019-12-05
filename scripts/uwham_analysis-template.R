@@ -134,7 +134,7 @@ dgbind <- dgsite + (-ze[,mlam]/bet[]) - (-ze[,1]/bet[])
 ddgbind <- sqrt(ve[,mlam]+ve[,1])/bet
 
 #average energy
-usl1 <- ebinds[label.lam == mlam]
+usl1 <- ebinds[label.lam == mlam & label.tempt == 1]
 de <- mean(usl1)
 sde <- sd(usl1)
 dde <- sde/sqrt(length(usl1))
@@ -148,18 +148,19 @@ cat("ub=", ub, "sd=", sde, "\n")
 cat("dgsite=", dgsite)
 sink()
 
-dglambda <- cbind(lam,-ze[1,]/bet)
-plot(lam, -ze[1,]/bet, type="l")
+#free energy profile at first temperature
+dglambda <- cbind(lam,-ze[1,]/bet[1])
+plot(lam, -ze[1,]/bet[1], type="l")
 write(t(dglambda),file="dglambda.dat",ncol=2)
 
-#get plain be histograms
+#get plain be histograms at first temperature
 umin <- min(ebinds)
 umax <- max(ebinds)
-u <- ebinds[label.lam == mlam];
+u <- ebinds[label.lam == mlam & label.tempt == 1 ];
 hs <- hist(u,plot=FALSE);
 pmax = 1.2*max(hs$density)
 for ( i in 1:mlam ){
-    u <- ebinds[label.lam == i];
+    u <- ebinds[label.lam == i & label.tempt == 1 ];
     hs <- hist(u,plot=FALSE);
     if ( i == 1 ) {
         plot(hs$mids,hs$density,type="l",xlim=c(umin,umax),ylim=c(0,pmax));
