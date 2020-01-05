@@ -15,6 +15,7 @@ task {
 }
 
 build_geometry {
+  distil_solute = false
   neutralize_system = false
   rezero_system = false
   solvate_system = false
