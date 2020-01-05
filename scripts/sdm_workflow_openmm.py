@@ -488,7 +488,8 @@ if __name__ == '__main__':
     print ("Writing mintherm driver file ...")
     sys.stdout.flush()
     sdm.writeThermInputFile()
-
+    sdm.writeLigStructureFile()
+    
     print ("Writing job input files ...")
     sys.stdout.flush()
     sdm.writeCntlFile()
