@@ -24,7 +24,7 @@ class sdm_job_openmm_asyncre(object):
         """ Print an error and exit """
         print(text)
         sys.exit(1)
-        
+
     #ASyncRE control file
     def writeCntlFile(self):
         input = ""
@@ -37,7 +37,7 @@ class sdm_job_openmm_asyncre(object):
             msg = "writeCntlFile: invalid JOB_TRANSPORT: %s Should be SSH or LOCAL_OPENMM." % job_transport
             self.exit(msg)
         input += "JOB_TRANSPORT = '%s'\n" % job_transport
-        
+
         re_type = self.keywords.get('RE_TYPE')
         if re_type is None:
             msg = "writeCntlFile: RE_TYPE is not specified"
@@ -53,9 +53,9 @@ class sdm_job_openmm_asyncre(object):
         input += "ENGINE = '%s'\n" % engine
 
         input += "ENGINE_INPUT_BASENAME = '%s'\n" % self.jobname
-		
+
         input += "RE_SETUP = 'YES'\n"
-        
+
         extfiles = self.keywords.get('ENGINE_INPUT_EXTFILES')
         required_files = "runopenmm"
         if extfiles is None:
@@ -67,20 +67,20 @@ class sdm_job_openmm_asyncre(object):
         if re_type == 'BEDAMTEMPT':
             rcptfile =  self.jobname + '_rcpt_0' + '.dms'
             ligfile =  self.jobname + '_lig_0' + '.dms'
-	    extfiles += ",%s,%s" % (rcptfile,ligfile)
+            extfiles += ",%s,%s" % (rcptfile,ligfile)
             input += "ENGINE_INPUT_EXTFILES = '%s'\n" % extfiles
 
         temperatures = self.keywords.get('TEMPERATURES')
         if temperatures is not None:
             input += "TEMPERATURES = '%s'\n" % temperatures
-        
+
         lambdas = self.keywords.get('LAMBDAS')
         if lambdas is not None:
             input += "LAMBDAS = '%s'\n" % lambdas
         else:
             msg = "writeCntlFile: 'LAMBDAS' is required."
             self.exit(msg)
-            
+
         nlambdas = len(lambdas.split(","))
         zerosdefault = "0.000"
         for i in range(1,nlambdas):
@@ -90,8 +90,8 @@ class sdm_job_openmm_asyncre(object):
         if lambda1 is not None:
             input += "LAMBDA1 = '%s'\n" % lambda1
         else:
-            input += "LAMBDA1 = '%s'\n" % lambdas     
-        
+            input += "LAMBDA1 = '%s'\n" % lambdas
+
         lambda2 = self.keywords.get('LAMBDA2')
         if lambda2 is not None:
             input += "LAMBDA2 = '%s'\n" % lambda2
@@ -103,19 +103,19 @@ class sdm_job_openmm_asyncre(object):
             input += "ALPHA = '%s'\n" % alpha
         else:
             input += "ALPHA = '%s'\n" % zerosdefault
-        
+
         u0 = self.keywords.get('U0')
         if u0 is not None:
             input += "U0 = '%s'\n" % u0
         else:
             input += "U0 = '%s'\n" % zerosdefault
-            
+
         w0coeff = self.keywords.get('W0COEFF')
         if w0coeff is not None:
             input += "W0COEFF = '%s'\n" % w0coeff
         else:
             input += "W0COEFF = '%s'\n" % zerosdefault
-            
+
         wall_time = self.keywords.get('WALL_TIME')
         if wall_time is not None:
             input += "WALL_TIME = %d\n" % int(wall_time)
@@ -131,7 +131,7 @@ class sdm_job_openmm_asyncre(object):
         checkpoint_time = self.keywords.get('CHECKPOINT_TIME')
         if checkpoint_time is not None:
             input += "CHECKPOINT_TIME = %d\n" % int(checkpoint_time)
-            
+
         input += "NODEFILE = 'nodefile'\n"
 
         subjobs_buffer_size = self.keywords.get('SUBJOBS_BUFFER_SIZE')
@@ -151,7 +151,7 @@ class sdm_job_openmm_asyncre(object):
         input += "TRJ_FREQUENCY = '%d'\n" % int(ntrj)
 
         #implicit solvent
-        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT');        
+        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
         if implicitsolvent is None:
             msg = "writeCntlFile: Specify implicit solvent to continue"
             self.exit(msg)
@@ -174,7 +174,7 @@ class sdm_job_openmm_asyncre(object):
                 lig_atom_id = ""
             input += "REST_LIGAND_CMLIG_ATOMS = %s\n" % lig_atom_id
             input += "NATOMS_LIGAND = '%d'\n" % int(self.n_lig)
-            
+
             #force constant etc.
             (kf, tol) = self.getVsiteParams()
             if kf is not None:
@@ -183,7 +183,7 @@ class sdm_job_openmm_asyncre(object):
                 input += "CM_TOL = %.2f\n" % float(tol)
 
             #soft core settings
-            (soft_core_method,  soft_core_umax, soft_core_acore) = self.getSoftCoreParams()
+            (soft_core_method, soft_core_umax, soft_core_acore) = self.getSoftCoreParams()
             input += "SOFT_CORE_METHOD = '%s'\n" % str(soft_core_method)
             input += "UMAX = %.2f\n" % soft_core_umax
             input += "ACORE = %f\n" % soft_core_acore
@@ -266,7 +266,7 @@ class sdm_job_openmm_asyncre(object):
         else:
             stepsize = float(stepsize)
         return (friction_coeff, stepsize)
-    
+
 #the template driver file for each MD cycle
     def writeOpenMMDriverFile(self):
         job_transport = self.keywords.get('JOB_TRANSPORT')
@@ -293,17 +293,17 @@ class sdm_job_openmm_asyncre(object):
 
         #MD parameters
         (friction_coeff, stepsize) = self.getMDParams()
-        
+
         #steps etc.
         nsteps = int(self.keywords.get('PRODUCTION_STEPS'))
         nprnt =  int(self.keywords.get('PRNT_FREQUENCY'))
         ntrj =  int(self.keywords.get('TRJ_FREQUENCY'))
 
         #implicit solvent
-        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT');        
+        implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
         if implicitsolvent is None:
             implicitsolvent = None
-        
+
         #soft core settings
         (soft_core_method,  soft_core_umax, soft_core_acore) = self.getSoftCoreParams()
 
@@ -333,7 +333,7 @@ class sdm_job_openmm_asyncre(object):
             nprnt = nprnt,
             ntrj = ntrj
         )
-        
+
         driverfile = "%s.py" % self.jobname
         #only write Python driver file if job trasnport is 'SSH'
         f = open(driverfile, "w")
@@ -359,10 +359,10 @@ class sdm_job_openmm_asyncre(object):
         else:
             lig_atom_id = ""
         (kf, tol) = self.getVsiteParams()
-        
+
         #implicit solvent
         implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
-        
+
         #platform etc.
         if self.keywords.get('OPENMM_PLATFORM') is None:
             platform_name = 'Reference'
@@ -391,7 +391,7 @@ class sdm_job_openmm_asyncre(object):
             kfdihedral2 = None,
             dihedral2tol = None
         )
-        
+
         driverfile = "%s_mintherm.py" % self.jobname
         f = open(driverfile, "w")
         f.write(inputr)
@@ -414,12 +414,12 @@ class sdm_job_openmm_asyncre(object):
         if temperatures is None:
             msg = "writeUWAHMFile: 'TEMPERATURES' is required."
             self.exit(msg)
-        
+
         lambdas = self.keywords.get('LAMBDAS')
         if lambdas is None:
             msg = "writeUWAHMFile: 'LAMBDAS' is required."
             self.exit(msg)
-            
+
         nlambdas = len(lambdas.split(","))
         zerosdefault = "0.000"
         for i in range(1,nlambdas):
@@ -428,7 +428,7 @@ class sdm_job_openmm_asyncre(object):
         lambda1 = self.keywords.get('LAMBDA1')
         if lambda1 is None:
             lambda1 = lambdas
-        
+
         lambda2 = self.keywords.get('LAMBDA2')
         if lambda2 is None:
             lambda2 = lambdas
@@ -436,11 +436,11 @@ class sdm_job_openmm_asyncre(object):
         alpha = self.keywords.get('ALPHA')
         if alpha is None:
             alpha = zerosdefault
-        
+
         u0 = self.keywords.get('U0')
         if u0 is None:
             u0 = zerosdefault
-            
+
         w0coeff = self.keywords.get('W0COEFF')
         if w0coeff is None:
             w0coeff = zerosdefault
@@ -450,7 +450,7 @@ class sdm_job_openmm_asyncre(object):
             msg = "writeUWAHMFile: 'REST_LIGAND_CMTOL' is required."
             self.exit(msg)
         vsiterad = float(vsiterad)
-            
+
         #can't use .format() because of curly brackets in R, order is important
         inputr = input_uwham % (
             lambdas,
@@ -462,17 +462,17 @@ class sdm_job_openmm_asyncre(object):
             temperatures,
             vsiterad
         )
-            
+
         uwham_file = "uwham_analysis.R"
         f = open(uwham_file, "w")
         f.write(inputr)
         f.close()
-            
+
 ##################### MAIN CODE ##########################
 if __name__ == '__main__':
     # Parse arguments:
     usage = "%prog <ConfigFile>"
-    
+
     if len(sys.argv) != 2:
         print("Please specify ONE input file")
         sys.exit(1)
@@ -480,16 +480,16 @@ if __name__ == '__main__':
     commandFile = sys.argv[1]
 
     sys.stdout.flush()
-    
+
     print ("Reading options")
     sys.stdout.flush()
     sdm = sdm_job_openmm_asyncre(commandFile, options=None)
-    
+
     print ("Writing mintherm driver file ...")
     sys.stdout.flush()
     sdm.writeThermInputFile()
     sdm.writeLigStructureFile()
-    
+
     print ("Writing job input files ...")
     sys.stdout.flush()
     sdm.writeCntlFile()
@@ -498,4 +498,3 @@ if __name__ == '__main__':
     print("Writing analysis UWHAM R script")
     sys.stdout.flush()
     sdm.writeUWHAMFile()
-    

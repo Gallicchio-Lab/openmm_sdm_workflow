@@ -97,7 +97,7 @@ print(state.getPotentialEnergy())
 
 stepId = 5000
 totalSteps = 50000
-loopStep = totalSteps/stepId
+loopStep = int(totalSteps/stepId)
 delta_temperature = (final_temperature - initial_temperature)/loopStep
 simulation.reporters.append(StateDataReporter(stdout, stepId, step=True, potentialEnergy = True, temperature=True))
 

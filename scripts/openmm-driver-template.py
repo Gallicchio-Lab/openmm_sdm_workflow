@@ -143,7 +143,7 @@ simulation.reporters.append(StateDataReporter(stdout, nprnt, step=True, temperat
 simulation.reporters.append(DCDReporter("{jobname}_@n@.dcd", ntrj))
 simulation.reporters.append(PDBReporter("{jobname}_@n@.pdb", totalSteps))
 
-loops = totalSteps/nprnt
+loops = int(totalSteps/nprnt)
 start=datetime.now()
 step = 0
 for i in range(loops):

@@ -124,7 +124,7 @@ def add_agbnp2_table(conn, atom_types, table_name):
                 ws = -16.0 * math.pi * RHO * epsiloniw * s6 / 3.0
                 atom['ialpha'] *= ws
                 atom['salpha'] *= ws
-    for iatom in xrange(1, len(st.atom)+1): 
+    for iatom in range(1, len(st.atom)+1): 
         if iatom not in atoms:
             raise Agbnp2Error("parameters not found for atom %d" % iatom)
         cols = ['id'] + PARAM_NAMES
