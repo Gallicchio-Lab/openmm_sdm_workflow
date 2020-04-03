@@ -40,6 +40,13 @@ For a background on the alchemical process and the conformational sampling techn
 
 ## Installation
 
+### For the Impatient
+
+Use our [OpenMM/SDM Docker image](http://www.compmolbiophysbc.org/research/research-blog/acentosdockerimageforopenmmsdmdevelopment).
+
+
+### Do-it-yourself Instructions
+
 SDM calculations require several pieces of software:
 
 1. Conda 2
