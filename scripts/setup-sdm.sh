@@ -36,6 +36,12 @@ cp ${scripts_dir}/add_agbnp2.py ${jobdir}/  && cp ${scripts_dir}/${agbnpparam} $
 
 printf '%s\n' "${des_builder_cmd}" > ${des_builder_file}   && $SCHRODINGER/utilities/multisim -JOBNAME ${set_basename}_receptor -m des_builder.msj ${receptor}.maegz -o ${receptor}.cms -maxjob 1 -WAIT || exit 1
 
+if [ ! -z ${amberhome+x} ]; then
+    export AMBERHOME=${amberhome}
+    echo "Assigning AMBER parameters to receptor ..."
+    bash ${scripts_dir}/ff_opls_to_amber.sh ${receptor}.cms || exit 1
+fi
+
 echo "Converting receptor to .dms format ..."
 mae2dms ${receptor}.cms ${receptor}.dms                 || exit 1
 
@@ -65,6 +71,12 @@ for lig in ${ligands} ; do
   echo "Assigning force field parameters to ligand ${lig} ..."
   echo ${des_builder_cmd} > ${des_builder_file} && $SCHRODINGER/utilities/multisim -JOBNAME ${set_basename}_${jobname} -m des_builder.msj ${lig}.maegz -o ${lig}.cms -maxjob 1 -WAIT || exit 1
 
+  if [ ! -z ${amberhome+x} ]; then
+    export AMBERHOME=${amberhome}
+    echo "Assigning GAFF parameters to ${lig} ..."
+    bash ${scripts_dir}/ff_opls_to_gaff.sh ${lig}.cms || exit 1
+  fi
+  
   echo "Converting ${lig} to .dms format ..."
   mae2dms ${lig}.cms ${jobname}_lig.dms || exit 1
 

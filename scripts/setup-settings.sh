@@ -13,6 +13,10 @@ scripts_dir=${work_dir}/scripts
 #schrodinger=$HOME/schrodinger/Desmond_Maestro_2017.4
 schrodinger=<path to schrodinger installation directory>
 
+#ambertools installation path,
+#if enabled it will try to assign AMBER/GAFF/AM1-BCC parameters 
+#amberhome=/opt/amber
+
 #msys installation path
 #msys_path=$HOME/local
 msys_path=<path to msys installation directory>
