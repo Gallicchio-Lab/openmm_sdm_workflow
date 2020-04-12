@@ -22,7 +22,11 @@ This software is maintained by the Gallicchio's laboratory at Department of Chem
 
 ## Documentation and Tutorials
 
-The documentation is organized in a set of tutorials. Currently, follow the [T4 Lysozyme tutorial](tutorials/t4l/tutorial.md) which prepares SDM calculations for farm of GPUs whether local or distributed on multiple servers. More tutorials are being finalized.  
+The documentation is organized in a set of tutorials. Currently, follow the
+
+[T4 Lysozyme tutorial](tutorials/t4l/tutorial.md)
+
+which prepares SDM calculations for farm of GPUs whether local or distributed on multiple servers. More tutorials are being finalized.  
 
 ## References
 
@@ -39,6 +43,13 @@ For a background on the alchemical process and the conformational sampling techn
 
 
 ## Installation
+
+### For the Impatient
+
+Use our [OpenMM/SDM Docker image](http://www.compmolbiophysbc.org/research/research-blog/acentosdockerimageforopenmmsdmdevelopment).
+
+
+### Do-it-yourself Instructions
 
 SDM calculations require several pieces of software:
 
