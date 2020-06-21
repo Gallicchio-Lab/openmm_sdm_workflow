@@ -150,6 +150,18 @@ class sdm_job_openmm_asyncre(object):
             ntrj = nprnt
         input += "TRJ_FREQUENCY = '%d'\n" % int(ntrj)
 
+        #heating & cooling settings (if present)
+        heat_and_cool_rate = self.keywords.get('HEAT_AND_COOL_RATE')
+        if heat_and_cool_rate is not None:
+            input += "HEAT_AND_COOL_RATE = '%f'\n" % float(heat_and_cool_rate)
+            hightemp = self.keywords.get('HIGHTEMPERATURE')
+            heating_steps = self.keywords.get('HEATING_STEPS')
+            cooling_steps = self.keywords.get('COOLING_STEPS')
+            input += "HIGHTEMPERATURE = '%f'\n" % float(hightemp)
+            input += "HEATING_STEPS = '%d'\n" % int(heating_steps)
+            input += "COOLING_STEPS = '%d'\n" % int(cooling_steps)
+
+
         #implicit solvent
         implicitsolvent = self.keywords.get('IMPLICIT_SOLVENT')
         if implicitsolvent is None:
