@@ -203,7 +203,7 @@ class sdm_job_openmm_asyncre(object):
             #MD stepsize and relaxation parameters
             (friction_coeff, stepsize) = self.getMDParams()
             input += "FRICTION_COEFF = %f\n" % friction_coeff
-            input += "TIME_STEP = %.3f\n" % stepsize
+            input += "TIME_STEP = %f\n" % stepsize
 
         verbose = self.keywords.get('VERBOSE')
         if verbose is not None:
