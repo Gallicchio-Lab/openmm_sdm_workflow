@@ -12,17 +12,19 @@ Rajat Pal rajatfor2014@gmail.com
 
 Sheenam Sheenam ssheenam@gradcenter.cuny.edu
 
+Solmaz Azimi sazimi@gradcenter.cuny.edu
+
 ## License
 
 This software is released under the LGPL license.
 
 ## Credits
 
-This software is maintained by the Gallicchio's laboratory at Department of Chemistry of Brooklyn College of CUNY ([compmolbiophysbc.org](http://compmolbiophysbc.org)). Development and maintenance of this software is supported in part from a grant from the National Science Foundation ([CAREER 1750511](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1750511&HistoricalAwards=false)).
+This software is maintained by the Gallicchio Laboratory at the Department of Chemistry in Brooklyn College of CUNY ([compmolbiophysbc.org](http://compmolbiophysbc.org)). Development and maintenance of this software is supported in part from a grant from the National Science Foundation ([CAREER 1750511](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1750511&HistoricalAwards=false)).
 
 ## Documentation and Tutorials
 
-The documentation is organized in a set of tutorials. Currently, follow the
+The documentation is organized as the
 
 [T4 Lysozyme tutorial](tutorials/t4l/tutorial.md)
 
@@ -44,14 +46,7 @@ For a background on the alchemical process and the conformational sampling techn
 
 ## Installation
 
-### For the Impatient
-
-Use our [OpenMM/SDM Docker image](http://www.compmolbiophysbc.org/research/research-blog/acentosdockerimageforopenmmsdmdevelopment).
-
-
-### Do-it-yourself Instructions
-
-SDM calculations require several pieces of software:
+Use our [OpenMM/SDM Docker image](http://www.compmolbiophysbc.org/research/research-blog/acentosdockerimageforopenmmsdmdevelopment). It includes all the software necessary for running SDM calculations, including: 
 
 1. Conda 2
 2. OpenMM 7.2 or later
@@ -65,7 +60,9 @@ SDM calculations require several pieces of software:
 10. UWHAM for R
 11. VMD for visualization 
 
-We summarize here the steps to install them and configure them. The steps below were tested on a 16.04 Ubuntu system.
+Below, a summary of the packages are provided that include instructions on their installation and configuration. In the interest of ease and efficiency, the Docker Image is recommended. 
+
+Note the steps below were tested on a 16.04 Ubuntu system.
 
 ### Conda 2
 
@@ -78,7 +75,7 @@ bash Miniconda2-latest-Linux-x86_64.sh
 
 In this tutorial we assume that Miniconda 2 is installed under `$HOME/miniconda2`. Adjust as needed.
 
-Activate the conda environment
+Activate the conda environment:
 
 ```
 source ~/miniconda2/bin/activate
@@ -86,9 +83,9 @@ source ~/miniconda2/bin/activate
 
 ### OpenMM
 
-We recommend installing OpenMM from [source](https://github.com/pandegroup/openmm) since most of the steps required are the same as for building the SDM-related plugins (see below). However binary installations of OpenMM should probably also work. Detailed building instructions for OpenMM are [here](http://docs.openmm.org/latest/userguide/library.html#compiling-openmm-from-source-code). SDM requires an OpenCL platform with GPUs from NVIDIA (CUDA) or AMD, which we assume are in place.
+We recommend installing OpenMM from [source](https://github.com/pandegroup/openmm) as several necessary steps are similar to that of building SDM-related plugins (see below). Binary installations of OpenMM can also work. Detailed building instructions for OpenMM are [here](http://docs.openmm.org/latest/userguide/library.html#compiling-openmm-from-source-code). SDM requires an OpenCL platform with GPUs from NVIDIA (CUDA) or AMD, which we assume are in place.
 
-These are the steps we used to build OpenMM 7.3.1 on an Ubuntu 16.04 system:
+The steps we used to build OpenMM 7.3.1 on an Ubuntu 16.04 system involve:
 
 ```
 mkdir $HOME/devel
@@ -102,7 +99,7 @@ cd build_openmm
 ccmake -i ../openmm-7.3.1
 ```
 
-Hit `c` (configure) until all variables are correctly set. Set `CMAKE_INSTALL_PREFIX` to point to the openmm installation directory. Here we assume `$HOME/local/openmm-7.3.1`. If an OpenCL platform is detected (such as from a NVIDIA CUDA installation) it will be enabled automatically. For the present purposes the CUDA platform is optional. Hit `g` to generate the makefiles and `q` to exit `ccmake`, then:
+Hit `c` (configure) until all variables are correctly set. Set `CMAKE_INSTALL_PREFIX` to point to the openmm installation directory. Here we assume `$HOME/local/openmm-7.3.1`. If an OpenCL platform is detected (such as from a NVIDIA CUDA installation) it will be enabled automatically. In the context of this tutorial, the CUDA platform is optional. Hit `g` to generate the makefiles and `q` to exit `ccmake`, continue with:
 
 ```
 make install
@@ -124,11 +121,11 @@ make install
 make PythonInstall
 ```
 
-The `sqlitebrowser` application is very useful to inspect DMS files.
+The `sqlitebrowser` application is very useful for inspecting DMS files.
 
 ### Desmond
 
-In this tutorial we will use academic Desmond as part of the Schrodinger's environment to assign OPLS2005 force field parameters. Download and install [Maestro/Desmond](https://www.deshawresearch.com/downloads/download_desmond.cgi). If you have it, the commercial version of Maestro/Desmond also works, of course.
+In this tutorial, in order to assign OPLS2005 force field parameters, we will use academic Desmond as part of the Schrodinger's environment. Download and install [Maestro/Desmond](https://www.deshawresearch.com/downloads/download_desmond.cgi). Naturally, the commercial version of Maestro/Desmond is also functional.
 
 ### Msys
 
@@ -137,41 +134,41 @@ In this tutorial we will use academic Desmond as part of the Schrodinger's envir
 
 ### SDM Workflow
 
-It's this package
+The package includes:
 
 ```
 cd $HOME/devel
 git clone https://github.com/egallicc/openmm_sdm_workflow.git
 ```
 
-For this tutorial we will use the structures stored under `openmm_sdm_workflow/tutorial` and modify the files under `openmm_sdm_workfklow/tutorial/scripts` to setup the simulations.
+In order to set up the simulations for this tutorual,  we will use the structures stored under `openmm_sdm_workflow/tutorial` and modify the files under `openmm_sdm_workfklow/tutorial/scripts`. 
 
 ### SDM OpenMM plugin
 
-This is a plugin that implements a customized Langevin integrator to compute the alchemical potential in SDM.
+This plugin implements a customized Langevin integrator to compute the alchemical potential in SDM.
 
 ```
 cd $HOME/devel
 git clone https://github.com/rajatkrpal/openmm_sdm_plugin.git
 ```
 
-then follow the [installation instructions](https://github.com/rajatkrpal/openmm_sdm_plugin/blob/master/README.md) for this package. Point the `CMAKE_INSTALL_PREFIX` and `OPENMM_DIR` to the OpenMM installation directory (`$HOME/local/openmm-7.3.1` in this example).
+Follow the [installation instructions](https://github.com/rajatkrpal/openmm_sdm_plugin/blob/master/README.md) for this package. Point the `CMAKE_INSTALL_PREFIX` and `OPENMM_DIR` to the OpenMM installation directory (`$HOME/local/openmm-7.3.1` in this example).
 
 
 ### AGBNP OpenMM plugin
 
-This is a plugin that implements the AGBNP implicit solvent model in OpenMM
+This tutorial is conducted in the context of an implicit solvent. This plugin implements the AGBNP implicit solvent model in OpenMM. A tutorial with explicit solvent is in progress.
 
 ```
 cd $HOME/devel
 git clone https://github.com/egallicc/openmm_agbnp_plugin.git
 ```
 
-then follow the [installation instructions](https://github.com/egallicc/openmm_agbnp_plugin/blob/master/README.md) for this package. Point the `CMAKE_INSTALL_PREFIX` and `OPENMM_DIR` to the OpenMM installation directory (`$HOME/local/openmm-7.3.1` in this example).
+Follow the [installation instructions](https://github.com/egallicc/openmm_agbnp_plugin/blob/master/README.md) for this package. Point the `CMAKE_INSTALL_PREFIX` and `OPENMM_DIR` to the OpenMM installation directory (`$HOME/local/openmm-7.3.1` in this example).
 
 ### ASyncRE for OpenMM
 
-ASyncRE is a package written in python to perform replica exchange simulations in asynchronous mode across a wide range of computational devices and grids. The specific version used by SDM distributes OpenMM jobs across GPU compute servers through passwordless `ssh`. To install it do:
+ASyncRE performs replica exchange simulations in asynchronous mode across a wide range of computational devices and grids. The specific version used by SDM distributes OpenMM jobs across GPU compute servers through passwordless `ssh`. For installation, proceed as:
 
 ```
 conda install numpy configobj paramiko
@@ -181,11 +178,11 @@ cd async_re-openmm
 python setup.py install
 ```
 
-Here is a [guide](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to set up password-less `ssh` across a farm of computers. ASyncRE does not require that the compute servers share a common user space and a shared filesystem.
+To set up password-less `ssh` across a farm of computers, refer to [guide](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604). ASyncRE does not require that the compute servers share a common user space and a shared filesystem.
 
 ### UWHAM for R
 
-The unbinned weighted histogram analysis method ([UWHAM](http://www.compmolbiophysbc.org/publications#uwham)) is an implementation of the MBAR thermodynamic reweighting method for R. It is used in this tutorial to compute binding free energies from the output of SDM calculations. The UWHAM package is part of the CRAN archive. To install it do:
+The unbinned weighted histogram analysis method ([UWHAM](http://www.compmolbiophysbc.org/publications#uwham)) is an implementation of the MBAR thermodynamic reweighting method for R. In this tutorial, UWHAM computes the binding free energies from the output of SDM calculations. The UWHAM package is part of the CRAN archive. For installation, proceed as:
 
 ```
 R
@@ -194,7 +191,7 @@ install.packages("UWHAM")
 
 ### VMD
 
-[VMD](https://www.ks.uiuc.edu/Research/vmd/) is an indispensable tool for visualization and analysis of trajectories. Also, we use the `catdcd` tool distributed with VMD to parse and concatenate .dcd trajectory files. For this tutorial we will assume that VMD is installed in `/usr/local`.
+[VMD](https://www.ks.uiuc.edu/Research/vmd/) is an indispensable tool for visualization and analysis of trajectories. We use the `catdcd` tool distributed with VMD to parse and concatenate .dcd trajectory files. For this tutorial we will assume that VMD is installed in `/usr/local`.
 
 ## Appendix
 
@@ -202,13 +199,13 @@ install.packages("UWHAM")
 
 The `msys` package provides the `mae2dms` utility to convert Maestro files into the DMS format.
 
-We assume an Ubuntu 16.04 system and a Conda 2 environment. Below we assume the Conda environment is located in `$HOME/miniconda2`. Change it to match your environment:
+We assume an Ubuntu 16.04 system and a Conda 2 environment. Below we assume the Conda environment is located in `$HOME/miniconda2`.Modify it to match your environment accordingly:
 
 ```
 source $HOME/miniconda2/bin/activate
 ```
 
-`msys`'s primary requirements are `boost`, `scons` and `sqlite3`:
+The primary requirement for`msys`are `boost`, `scons` and `sqlite3`:
 
 ```
 sudo apt install libboost-dev libboost-all-dev
@@ -216,14 +213,14 @@ sudo apt install scons
 sudo apt install sqlite3 libsqlite3-dev
 ```
 
-Retrieve the `msys` sources from the DE Shaw Research github archive. In the commands below we assume this is done in the `devel` folder of the user home directory. Change it to match your build environment. 
+Retrieve the `msys` sources from the DE Shaw Research github archive. In the commands below, we assume this is done in the `devel` folder of the user home directory. Modify it accordingly to match your build environment. 
 
 ```
 cd $HOME/devel
 git clone https://github.com/DEShawResearch/msys.git
 ```
 
-Consult the installation section of the README file that comes with `msys` if the steps below do not work for you
+Should the steps below cause issues, consult the installation section of the README file that comes with `msys`.
 
 ```
 cd $HOME/devel/msys
@@ -232,13 +229,13 @@ scons -j4
 scons -j4 PYTHONVER=27 MSYS_BOOST_PYTHON_SUFFIX=-py
 ```
 
-For this tutorial we assume that `msys` will be installed in `$HOME/local`. Change to match your choice.
+For this tutorial we assume that `msys` will be installed in `$HOME/local`. Modify it accordingly to match another set-up.
 
 ```
 scons -j4 PYTHONVER=27 MSYS_BOOST_PYTHON_SUFFIX=-py install PREFIX=$HOME/local
 ```
 
-make sure that `$HOME/local` is in your search paths:
+Ensure that `$HOME/local` is in your search paths:
 
 ```
 export PATH=$PATH:$HOME/local/bin
@@ -246,7 +243,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/local/lib
 export PYTHONPATH=$PYTHONPATH:$HOME/local/lib/python
 ```
 
-Test the installation
+Test the installation:
 
 ```
 cd $HOME
