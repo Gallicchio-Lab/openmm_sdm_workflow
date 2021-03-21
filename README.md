@@ -2,7 +2,7 @@
 
 VERSION 0.2.0
 
-A workflow to setup Single Decoupling alchemical binding free energy calculations with OpenMM.
+A workflow to setup the Single Decoupling Method (SDM) for alchemical binding free energy calculations in implicit solvent with OpenMM. A similar method on explicit solvent is upcoming.
 
 ## Contributors
 
@@ -24,11 +24,11 @@ This software is maintained by the Gallicchio Laboratory at the Department of Ch
 
 ## Documentation and Tutorials
 
-The documentation is organized as the
+The documentation is structured in the
 
-[T4 Lysozyme tutorial](tutorials/t4l/tutorial.md)
+[T4 Lysozyme tutorial](tutorials/t4l/tutorial.md),
 
-which prepares SDM calculations for farm of GPUs whether local or distributed on multiple servers. More tutorials are being finalized.  
+which prepares SDM calculations for a farm of GPUs, whether local or distributed, on multiple servers.   
 
 ## References
 
@@ -46,7 +46,7 @@ For a background on the alchemical process and the conformational sampling techn
 
 ## Installation
 
-Use our [OpenMM/SDM Docker image](http://www.compmolbiophysbc.org/research/research-blog/acentosdockerimageforopenmmsdmdevelopment). It includes all the software necessary for running SDM calculations, including: 
+The initial system setup is conducted on our [OpenMM/SDM Docker image](http://www.compmolbiophysbc.org/research/research-blog/acentosdockerimageforopenmmsdmdevelopment). It includes all the software necessary for running SDM calculations, including: 
 
 1. Conda 2
 2. OpenMM 7.2 or later
