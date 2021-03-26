@@ -34,7 +34,16 @@ The receptor and the ligands were exported from Maestro in separate folders (`li
 
 ## Setup on Docker
 
-Although the system can be setup manually, all the software tools are gathered in Docker for use.
+Although the system can be setup manually, all the software tools are gathered in Docker to expedite setup. First, download and install Docker accordingly. Then proceed with obtaining our Docker container with:
+
+```
+docker pull egallicchio/centos610-sdmsetup:latest
+```
+Once the pull has been completed, run the container:
+
+```
+docker run -it --rm egallicchio/centos610-sdmsetup:latest
+```
 
 Copy the SDM directory to Docker: 
 
@@ -42,7 +51,7 @@ Copy the SDM directory to Docker:
 docker cp openmm_sdm_workflow [docker id]:/tmp/
 ```
 
-The files can be modified before or after the copy, however the setup must be run in `$HOME` on Docker. Files can be read in `$HOME` but not written. The `/tmp` directory bypasses this complication.
+The files can be modified before or after the copy, however the setup must be run in `$HOME` on Docker. Files can be read in `$HOME` but not written. The `tmp/` directory bypasses this complication.
 
 
 ### Step 1: set the simulation parameters in `setup-settings.sh`
@@ -150,7 +159,7 @@ The `<num GPUs>` setting is for MD threads running on multiple GPUs, which is a 
 
 In this tutorial, the RE simulation of each complex employs 16 replicas. ASyncRE assumes that there are more replicas than computing devices. In this case, it is not recommended to use more than 8 GPUs.
 
-### Step 5: run the workflow on Docker
+### Step 5: run the setup workflow on Docker
 
 Copy the directory from `/tmp` to `$HOME` on Docker. 
 
@@ -166,6 +175,9 @@ The workflow will first set up the receptor, and then each complex in turn.
 Minimization and thermalization must be conducted in a separate step for each complex.  
 
 ### Step 6: mintherm 
+
+Minimization and thermalization can be done in the local computer, however, this example will demonstrate this step, as well as running the simulation, on COMET.
+
 
 ## Run the ASyncRE simulations
 
