@@ -102,12 +102,12 @@ WALL_TIME = 480
 
 Settings:
 
-* `JOB_TRANSPORT`: job transport mechanism. Set it to `SSH`. See below for the 'LOCAL_OPENMM' transport.
+* `JOB_TRANSPORT`: job transport mechanism. Set it to 'LOCAL_OPENMM'.
 * `TEMPERATURES`: list of replica exchange temperatures. Set this to the single temperature `300`.
 * `LAMBDAS`: list of alchemical lambda values in comma-separated string. Set it to `' 0.000, 0.057, 0.114, 0.171, 0.229, 0.286, 0.343, 0.400, 0.457, 0.514, 0.571, 0.629, 0.686, 0.743, 0.800, 1.000'`
 * `CYCLE_TIME`: period of RE exchanges in seconds. Set it to `30`.
 * `WALL_TIME`: wall-clock duration of the RE simulation for each complex in minutes. Set it to `480`.
-* `PRODUCTION_STEPS`: number of MD steps for each running cycle of a replica. Set it to `20000`.
+* `PRODUCTION_STEPS`: number of MD steps for each running cycle of a replica. Set it to `1000`.
 * `PRNT_FREQUENCY`: the MD period, in MD steps, for saving binding energy samples. Set it to `5000`.
 * `TRJ_FREQUENCY`: the MD period, in MD steps, for saving trajectory frames. Set it to `5000`.
 * `REST_LIGAND_CMLIGSQL`: sqlite selection specifying the CM atoms of the ligand. Set it to `'name GLOB 'C?''` to use the CM of the carbon atoms of the ligands.
@@ -176,7 +176,13 @@ Minimization and thermalization must be conducted in a separate step for each co
 
 ### Step 6: mintherm 
 
-Minimization and thermalization can be done in the local computer, however, this example will demonstrate this step, as well as running the simulation, on COMET.
+Minimization and thermalization can be done in the local computer, as well as on a supercomputer with the appropriate procedure. This tutorial will assume local implementation. For the complex of t4l and benzene:
+
+```
+./runopenmm t4l-benzene_mintherm.py
+```
+
+This step will produce the t4l-benzene_lig_0.dms and t4l-benzene_rcpt_0.dms files needed to initiate ASyncRE.
 
 
 ## Run the ASyncRE simulations
@@ -184,8 +190,8 @@ Minimization and thermalization can be done in the local computer, however, this
 Go to the simulation directories of each complex and launch the ASyncRE simulations. For example, assuming ASyncRE is installed under `$HOME/devel/async_re-openmm`:
 
 ```
-cd $HOME/t4l/complexes/t4l-toluene
-./runopenmm $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-toluene_asyncre.cntl
+cd $HOME/t4l/complexes/t4l-benzene
+./runopenmm $HOME/devel/async_re-openmm/bedamtempt_async_re.py t4l-benzene_asyncre.cntl
 ```
 
 Each RE simulation is set to run for 8 hours (see `WALL_TIME` above). The amount of samples collected will depend on the number of GPUs utilized. The more samples, the better converged will be the free energy estimate.
@@ -193,11 +199,11 @@ Each RE simulation is set to run for 8 hours (see `WALL_TIME` above). The amount
 Monitor the progress of each ASyncRE simulation by inspecting the `*_stat.txt` file. For example,
 
 ```
-cd $HOME/t4l/complexes/t4l-toluene
-cat t4l-toluene_stat.txt
+cd $HOME/t4l/complexes/t4l-benzene
+cat t4l-benzene_stat.txt
 ```
 
-will show something like:
+will demonstrate information similar to below:
 
 ```
 Replica  State  Lambda Lambda1 Lambda2 Alpha U0 W0coeff Temperature Status  Cycle 
@@ -221,9 +227,9 @@ Running = 1
 Waiting = 15
 ```
 
-In this case it shows that replicas 0 through 7 have completed one cycle and are waiting to perform a second. Replica 8 is currently running. Replicas 9 through 15 are waiting to run their first cycle. Because in this case `PRODUCTION_STEPS=20000` and `PRNT_FREQUENCY=5000`, each cycle is 20,000 MD steps and produces 4 binding energy samples. The `t4l-toluene_stat.txt` also shows the current lambda-state assigned to each replica. We see for example that replica 0 and replica 1 have exchanged states. 
+In this case it shows that replicas 0 through 7 have completed one cycle and are waiting to perform a second. Replica 8 is currently running. Replicas 9 through 15 are waiting to run their first cycle. Because in this case `PRODUCTION_STEPS=20000` and `PRNT_FREQUENCY=5000`, each cycle is 20,000 MD steps and produces 4 binding energy samples. The `t4l-benzene_stat.txt` also shows the current lambda-state assigned to each replica. We see for example that replica 0 and replica 1 have exchanged states. 
 
-Each replica runs in a separate subdirectory named `r0`, `r1`, etc. Each cycle generates .out, .dms, .log, .pdb, and .dcd files. For example the binding energy samples for the first cycle of replica 2 are stored in the file `r2/t4l-toluene_1.out` (last column). The .dms files are used to start the following cycle. The .pdb and .dcd files are used for trajectory visualization. See below.  
+Each replica runs in a separate subdirectory named `r0`, `r1`, etc. Each cycle generates .out, .dms, .log, .pdb, and .dcd files. For example the binding energy samples for the first cycle of replica 2 are stored in the file `r2/t4l-benzene_1.out` (last column). The .dms files are used to start the following cycle. The .pdb and .dcd files are used for trajectory visualization. See below.  
 
 The ASyncRE process can be killed at any time with `^C` and optionally restarted. However, replicas currently running on remote machines are likely to keep running and may have to be killed before ASyncRE can be restarted. To start from scratch (that is from the first cycle) remove the replicas directories by doing `rm -r r? r??`. 
 
